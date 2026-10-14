@@ -1,0 +1,81 @@
+{
+  "project_schema_version": "1.0.0",
+  "name": "Team Goals by Group / 各队小组赛进球",
+  "locale": "zh-CN",
+  "source_datasets": [
+    {
+      "dataset_id": "fifa-world-cup-2026-offline-seed",
+      "table": "team_matches",
+      "path": "data/2026/team_matches.json"
+    }
+  ],
+  "operations": [
+    {
+      "id": "filter1",
+      "type": "filter",
+      "input": "table:team_matches",
+      "params": {
+        "field": "stage",
+        "operator": "eq",
+        "value": "group"
+      },
+      "output": "node:group_matches"
+    },
+    {
+      "id": "agg1",
+      "type": "groupby_agg",
+      "input": "node:group_matches",
+      "params": {
+        "keys": [
+          "team_id"
+        ],
+        "aggregations": [
+          {
+            "source": "goals_for_90",
+            "name": "total_goals",
+            "func": "sum"
+          },
+          {
+            "source": "match_id",
+            "name": "matches",
+            "func": "count"
+          }
+        ]
+      },
+      "output": "node:team_totals"
+    },
+    {
+      "id": "sort1",
+      "type": "sort",
+      "input": "node:team_totals",
+      "params": {
+        "field": "total_goals",
+        "ascending": false
+      },
+      "output": "node:sorted_goals"
+    }
+  ],
+  "charts": [
+    {
+      "id": "chart1",
+      "title": {
+        "zh": "小组赛球队进球数",
+        "en": "Group-stage Goals by Team"
+      },
+      "type": "bar",
+      "source": "node:sorted_goals",
+      "x": "team_id",
+      "y": "total_goals",
+      "interaction": "click-to-filter"
+    }
+  ],
+  "layout": {
+    "active_chart": "chart1",
+    "show_code": true
+  },
+  "saved_at": "2026-10-14T00:00:00Z",
+  "data_scope_notice": {
+    "zh": "离线子集：仅A、B、C三组和部分淘汰赛",
+    "en": "Offline subset: only Groups A/B/C plus selected knockout matches"
+  }
+}

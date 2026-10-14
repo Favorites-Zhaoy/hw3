@@ -1,0 +1,143 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "fifa-world-cup-2026-offline-seed",
+  "table": "teams",
+  "meta": {
+    "source": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json",
+    "snapshot_date": "2026-10-14",
+    "scope": "partial_verified_sample",
+    "description": {
+      "zh": "样本涵盖球队",
+      "en": "Teams in the partial snapshot"
+    },
+    "row_count": 18
+  },
+  "rows": [
+    {
+      "team_id": "argentina",
+      "name_en": "Argentina",
+      "name_zh": "阿根廷",
+      "group": null,
+      "label_status": "translated"
+    },
+    {
+      "team_id": "belgium",
+      "name_en": "Belgium",
+      "name_zh": "比利时",
+      "group": null,
+      "label_status": "translated"
+    },
+    {
+      "team_id": "bosnia-herzegovina",
+      "name_en": "Bosnia & Herzegovina",
+      "name_zh": "波黑",
+      "group": "Group B",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "brazil",
+      "name_en": "Brazil",
+      "name_zh": "巴西",
+      "group": "Group C",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "canada",
+      "name_en": "Canada",
+      "name_zh": "加拿大",
+      "group": "Group B",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "czech-republic",
+      "name_en": "Czech Republic",
+      "name_zh": "捷克",
+      "group": "Group A",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "england",
+      "name_en": "England",
+      "name_zh": "英格兰",
+      "group": null,
+      "label_status": "translated"
+    },
+    {
+      "team_id": "france",
+      "name_en": "France",
+      "name_zh": "法国",
+      "group": null,
+      "label_status": "translated"
+    },
+    {
+      "team_id": "haiti",
+      "name_en": "Haiti",
+      "name_zh": "海地",
+      "group": "Group C",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "mexico",
+      "name_en": "Mexico",
+      "name_zh": "墨西哥",
+      "group": "Group A",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "morocco",
+      "name_en": "Morocco",
+      "name_zh": "摩洛哥",
+      "group": "Group C",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "norway",
+      "name_en": "Norway",
+      "name_zh": "挪威",
+      "group": null,
+      "label_status": "translated"
+    },
+    {
+      "team_id": "qatar",
+      "name_en": "Qatar",
+      "name_zh": "卡塔尔",
+      "group": "Group B",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "scotland",
+      "name_en": "Scotland",
+      "name_zh": "苏格兰",
+      "group": "Group C",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "south-africa",
+      "name_en": "South Africa",
+      "name_zh": "南非",
+      "group": "Group A",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "south-korea",
+      "name_en": "South Korea",
+      "name_zh": "韩国",
+      "group": "Group A",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "spain",
+      "name_en": "Spain",
+      "name_zh": "西班牙",
+      "group": null,
+      "label_status": "translated"
+    },
+    {
+      "team_id": "switzerland",
+      "name_en": "Switzerland",
+      "name_zh": "瑞士",
+      "group": "Group B",
+      "label_status": "translated"
+    }
+  ]
+}

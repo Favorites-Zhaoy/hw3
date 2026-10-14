@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "SYNTHETIC-data-quality-practice",
+  "table": "team_performance_demo",
+  "meta": {
+    "source": "synthetic_for_learning_only",
+    "never_show_as_real_world_cup_statistics": true,
+    "title": {
+      "zh": "数据清洗练习（虚构）",
+      "en": "Data cleaning exercise (synthetic)"
+    }
+  },
+  "rows": [
+    {
+      "team": "Mexico",
+      "match": "A-1",
+      "shots": "12",
+      "possession": "56%",
+      "xg": 1.1
+    },
+    {
+      "team": "mexico ",
+      "match": "A-2",
+      "shots": null,
+      "possession": "51%",
+      "xg": null
+    },
+    {
+      "team": "Brazil",
+      "match": "C-1",
+      "shots": "bad",
+      "possession": "unknown",
+      "xg": 2.3
+    },
+    {
+      "team": "Brazil",
+      "match": "C-1",
+      "shots": "bad",
+      "possession": "unknown",
+      "xg": 2.3
+    },
+    {
+      "team": "Canada",
+      "match": "B-2",
+      "shots": "18",
+      "possession": "61%",
+      "xg": 1.7
+    }
+  ]
+}

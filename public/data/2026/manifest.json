@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "id": "fifa-world-cup-2026",
+  "title": {
+    "zh": "2026 世界杯可视化分析",
+    "en": "2026 World Cup Visual Analytics"
+  },
+  "default_table": "team_matches",
+  "offline_snapshot": {
+    "id": "fifa-world-cup-2026-offline-seed",
+    "scope": "partial_verified_sample",
+    "matches": 26,
+    "complete_tournament": false,
+    "snapshot_date": "2026-10-14"
+  },
+  "remote_full_dataset": {
+    "available_via_fetch": true,
+    "auto_download_on_start": false,
+    "complete_expected_matches": 104,
+    "urls": {
+      "base": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json",
+      "detailed": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup-full.json",
+      "squads": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.squads.json"
+    }
+  },
+  "tables": {
+    "matches": {
+      "path": "data/2026/matches.json",
+      "rows": 26
+    },
+    "teams": {
+      "path": "data/2026/teams.json",
+      "rows": 18
+    },
+    "team_matches": {
+      "path": "data/2026/team_matches.json",
+      "rows": 52
+    },
+    "goals": {
+      "path": "data/2026/goals.json",
+      "rows": 78
+    },
+    "venues": {
+      "path": "data/2026/venues.json",
+      "rows": 15
+    }
+  },
+  "availability": {
+    "scores": "seed",
+    "goal_times": "seed",
+    "team_match_metrics": "derived",
+    "lineups": "remote_detailed",
+    "substitutions": "remote_detailed",
+    "bookings": "remote_detailed",
+    "squads": "remote_squads",
+    "shot_locations": "not_provided",
+    "pass_coordinates": "not_provided",
+    "tracking": "not_provided",
+    "xg": "not_provided"
+  },
+  "language_defaults": {
+    "zh": "zh-CN",
+    "en": "en-US"
+  },
+  "unknown_numeric_policy": "null"
+}

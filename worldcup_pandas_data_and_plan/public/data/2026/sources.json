@@ -1,0 +1,13 @@
+{
+  "verified_on": "2026-10-14",
+  "primary_source": {
+    "name": "openfootball/worldcup.json",
+    "license": "Public Domain (as declared by upstream project)",
+    "repository": "https://github.com/openfootball/worldcup.json",
+    "base_json": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json",
+    "detailed_json": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup-full.json",
+    "squads_json": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.squads.json"
+  },
+  "seed_origin": "Manually transcribed selected lines from base JSON, scores/goals/time verified against upstream",
+  "limitation": "The distributed offline snapshot is a verified subset, not the whole tournament. Run scripts/build-worldcup.mjs to materialize all matches."
+}

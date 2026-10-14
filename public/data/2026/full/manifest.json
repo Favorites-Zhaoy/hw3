@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "id": "fifa-world-cup-2026-full",
+  "complete_tournament": true,
+  "counts": {
+    "matches": 104,
+    "team_matches": 208,
+    "goals": 308,
+    "teams": 48,
+    "venues": 16
+  },
+  "sha256": {
+    "matches": "a97e539d48c740aa14def5eede83dae567c25eb75883662ad5cd17046dbdb220",
+    "team_matches": "53952e3c3b1afaa394c9aee99d0119e48745747ae209cbdf39772240fd2e0648",
+    "goals": "bd4c407c2fcdb168fa7841890bd6190271ec7c566fee690647f76f4c99b950e6",
+    "teams": "9582f62864085a117c4a3f093f7d378f051ef1a9b47adffada4b4f3293e38260",
+    "venues": "089c55536906d528b855650a8e640fdac150bbe94c322ed9a82f02c9379bb373"
+  },
+  "snapshot_date": "2026-10-15",
+  "snapshot_timezone": "Asia/Singapore",
+  "fetched_at": "2026-10-14T17:09:42.728Z",
+  "source": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json",
+  "source_sha256": "0ae2c18109b5aa86bc11928b43586ca430c234804d5bbf808d2c3bf2051ecfca",
+  "scope": "complete_tournament",
+  "availability": {
+    "scores": true,
+    "goal_times": true,
+    "shots": false,
+    "xg": false,
+    "tracking": false,
+    "lineups": false,
+    "squads": false
+  }
+}

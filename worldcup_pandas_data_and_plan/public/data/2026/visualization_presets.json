@@ -1,0 +1,214 @@
+{
+  "schema_version": "1.0.0",
+  "charts": [
+    {
+      "id": "match-timeline",
+      "name": {
+        "zh": "比赛日历",
+        "en": "Match calendar"
+      },
+      "table": "matches",
+      "type": "calendar",
+      "x_field": "date",
+      "y_field": "match_id",
+      "interactions": [
+        "click_to_filter",
+        "brush_to_filter",
+        "drill_down",
+        "copy_dataframe_result",
+        "show_pandas_code"
+      ],
+      "support": "supported"
+    },
+    {
+      "id": "goals-bar",
+      "name": {
+        "zh": "射手排名",
+        "en": "Scorer ranking"
+      },
+      "table": "goals",
+      "type": "bar",
+      "x_field": "player_name",
+      "y_field": "event_id",
+      "interactions": [
+        "click_to_filter",
+        "brush_to_filter",
+        "drill_down",
+        "copy_dataframe_result",
+        "show_pandas_code"
+      ],
+      "support": "supported"
+    },
+    {
+      "id": "team-comparison",
+      "name": {
+        "zh": "球队对比",
+        "en": "Team comparison"
+      },
+      "table": "team_matches",
+      "type": "grouped-bar",
+      "x_field": "team_id",
+      "y_field": "goals_for_90",
+      "interactions": [
+        "click_to_filter",
+        "brush_to_filter",
+        "drill_down",
+        "copy_dataframe_result",
+        "show_pandas_code"
+      ],
+      "support": "supported"
+    },
+    {
+      "id": "result-matrix",
+      "name": {
+        "zh": "球队-小组矩阵",
+        "en": "Team-group matrix"
+      },
+      "table": "team_matches",
+      "type": "heatmap",
+      "x_field": "group",
+      "y_field": "team_id",
+      "interactions": [
+        "click_to_filter",
+        "brush_to_filter",
+        "drill_down",
+        "copy_dataframe_result",
+        "show_pandas_code"
+      ],
+      "support": "supported"
+    },
+    {
+      "id": "daily-goals",
+      "name": {
+        "zh": "每日进球",
+        "en": "Daily goals"
+      },
+      "table": "matches",
+      "type": "line",
+      "x_field": "date",
+      "y_field": "ft1",
+      "interactions": [
+        "click_to_filter",
+        "brush_to_filter",
+        "drill_down",
+        "copy_dataframe_result",
+        "show_pandas_code"
+      ],
+      "support": "supported"
+    },
+    {
+      "id": "goals-box",
+      "name": {
+        "zh": "球队进球分布",
+        "en": "Goals distribution"
+      },
+      "table": "team_matches",
+      "type": "box",
+      "x_field": "team_id",
+      "y_field": "goals_for_90",
+      "interactions": [
+        "click_to_filter",
+        "brush_to_filter",
+        "drill_down",
+        "copy_dataframe_result",
+        "show_pandas_code"
+      ],
+      "support": "supported"
+    },
+    {
+      "id": "venue-dist",
+      "name": {
+        "zh": "场地分布",
+        "en": "Venue distribution"
+      },
+      "table": "matches",
+      "type": "bar",
+      "x_field": "venue_name",
+      "y_field": "match_id",
+      "interactions": [
+        "click_to_filter",
+        "brush_to_filter",
+        "drill_down",
+        "copy_dataframe_result",
+        "show_pandas_code"
+      ],
+      "support": "supported"
+    },
+    {
+      "id": "minute-hist",
+      "name": {
+        "zh": "进球分钟直方图",
+        "en": "Goal minute histogram"
+      },
+      "table": "goals",
+      "type": "histogram",
+      "x_field": "minute_base",
+      "y_field": "event_id",
+      "interactions": [
+        "click_to_filter",
+        "brush_to_filter",
+        "drill_down",
+        "copy_dataframe_result",
+        "show_pandas_code"
+      ],
+      "support": "supported"
+    },
+    {
+      "id": "knockout-tree",
+      "name": {
+        "zh": "淘汰赛树",
+        "en": "Knockout bracket"
+      },
+      "table": "matches",
+      "type": "bracket",
+      "x_field": "stage",
+      "y_field": "winner_id",
+      "interactions": [
+        "click_to_filter",
+        "brush_to_filter",
+        "drill_down",
+        "copy_dataframe_result",
+        "show_pandas_code"
+      ],
+      "support": "requires_full_104_for_complete_bracket"
+    },
+    {
+      "id": "quality-grid",
+      "name": {
+        "zh": "缺失值矩阵",
+        "en": "Missing values"
+      },
+      "table": "team_matches",
+      "type": "null-matrix",
+      "x_field": "team_id",
+      "y_field": "shots",
+      "interactions": [
+        "click_to_filter",
+        "brush_to_filter",
+        "drill_down",
+        "copy_dataframe_result",
+        "show_pandas_code"
+      ],
+      "support": "supported"
+    },
+    {
+      "id": "join-graph",
+      "name": {
+        "zh": "表关联图",
+        "en": "Table join graph"
+      },
+      "table": "matches",
+      "type": "relational-graph",
+      "x_field": "match_id",
+      "y_field": "team1_id",
+      "interactions": [
+        "click_to_filter",
+        "brush_to_filter",
+        "drill_down",
+        "copy_dataframe_result",
+        "show_pandas_code"
+      ],
+      "support": "supported"
+    }
+  ]
+}

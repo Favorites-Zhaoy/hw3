@@ -1,0 +1,323 @@
+{
+  "schema_version": "1.0.0",
+  "description": {
+    "zh": "关键字段数据字典；未列字段请查JSON样本",
+    "en": "Core fields; inspect JSON for additional attributes"
+  },
+  "tables": {
+    "matches": {
+      "columns": {
+        "match_id": {
+          "type": "string",
+          "label": {
+            "zh": "稳定的比赛主键",
+            "en": "Stable match primary key"
+          }
+        },
+        "date": {
+          "type": "date",
+          "label": {
+            "zh": "当地日期",
+            "en": "Local calendar date"
+          }
+        },
+        "kickoff_utc": {
+          "type": "datetime",
+          "label": {
+            "zh": "UTC开球时刻，ISO 8601",
+            "en": "UTC kickoff ISO 8601"
+          }
+        },
+        "stage": {
+          "type": "category",
+          "label": {
+            "zh": "赛事阶段",
+            "en": "Tournament stage"
+          }
+        },
+        "group": {
+          "type": "category",
+          "label": {
+            "zh": "A-L小组，淘汰赛为null",
+            "en": "Group A-L, null in knockout"
+          }
+        },
+        "ft1": {
+          "type": "integer nullable",
+          "label": {
+            "zh": "常规时间结束主队比分",
+            "en": "Team 1 goals at 90 minutes"
+          }
+        },
+        "ft2": {
+          "type": "integer nullable",
+          "label": {
+            "zh": "常规时间结束客队比分",
+            "en": "Team 2 goals at 90 minutes"
+          }
+        },
+        "et1": {
+          "type": "integer nullable",
+          "label": {
+            "zh": "加时后队伍1比分；未加时为null",
+            "en": "Team 1 goals after extra time or null"
+          }
+        },
+        "et2": {
+          "type": "integer nullable",
+          "label": {
+            "zh": "加时后队伍2比分；未加时为null",
+            "en": "Team 2 goals after extra time or null"
+          }
+        },
+        "penalties1": {
+          "type": "integer nullable",
+          "label": {
+            "zh": "点球大战队伍1进球数",
+            "en": "Team 1 penalties scored in shootout"
+          }
+        },
+        "penalties2": {
+          "type": "integer nullable",
+          "label": {
+            "zh": "点球大战队伍2进球数",
+            "en": "Team 2 penalties scored in shootout"
+          }
+        },
+        "winner_id": {
+          "type": "string nullable",
+          "label": {
+            "zh": "晋级/获胜球队；平局null",
+            "en": "Winner or null for ties"
+          }
+        },
+        "venue_id": {
+          "type": "string",
+          "label": {
+            "zh": "场地ID",
+            "en": "Venue identifier"
+          }
+        },
+        "attendance": {
+          "type": "integer nullable",
+          "label": {
+            "zh": "现场观众数；来源未提供为null",
+            "en": "Attendance when source provides it"
+          }
+        }
+      }
+    },
+    "team_matches": {
+      "columns": {
+        "match_id": {
+          "type": "string",
+          "label": {
+            "zh": "关联比赛",
+            "en": "Foreign key to match"
+          }
+        },
+        "team_id": {
+          "type": "string",
+          "label": {
+            "zh": "本场球队",
+            "en": "Team in this match"
+          }
+        },
+        "opponent_id": {
+          "type": "string",
+          "label": {
+            "zh": "本场对手",
+            "en": "Opponent team"
+          }
+        },
+        "result_90": {
+          "type": "category",
+          "label": {
+            "zh": "90分钟W/D/L",
+            "en": "Win/draw/loss at 90 minutes"
+          }
+        },
+        "goals_for_90": {
+          "type": "integer nullable",
+          "label": {
+            "zh": "90分钟本队进球数",
+            "en": "Goals scored within 90 minutes"
+          }
+        },
+        "goals_against_90": {
+          "type": "integer nullable",
+          "label": {
+            "zh": "90分钟本队失球数",
+            "en": "Goals conceded within 90 minutes"
+          }
+        },
+        "goals_for_final": {
+          "type": "integer nullable",
+          "label": {
+            "zh": "包括加时但不包括点球大战",
+            "en": "Including extra time, excluding shootout"
+          }
+        },
+        "win": {
+          "type": "boolean",
+          "label": {
+            "zh": "是否比赛最终获胜",
+            "en": "Whether final winner"
+          }
+        },
+        "shots": {
+          "type": "integer nullable",
+          "label": {
+            "zh": "来源未提供，始终null",
+            "en": "Unavailable from source: null"
+          }
+        },
+        "xg": {
+          "type": "float nullable",
+          "label": {
+            "zh": "来源未提供，始终null",
+            "en": "Unavailable xG: null"
+          }
+        }
+      }
+    },
+    "goals": {
+      "columns": {
+        "event_id": {
+          "type": "string",
+          "label": {
+            "zh": "进球事件主键",
+            "en": "Goal event primary key"
+          }
+        },
+        "match_id": {
+          "type": "string",
+          "label": {
+            "zh": "关联比赛",
+            "en": "Related match ID"
+          }
+        },
+        "scoring_team_id": {
+          "type": "string",
+          "label": {
+            "zh": "比分增加的一方",
+            "en": "Team awarded the goal"
+          }
+        },
+        "player_team_id": {
+          "type": "string",
+          "label": {
+            "zh": "球员所属一方（乌龙球时是对方）",
+            "en": "Player actual team, reversed for own goals"
+          }
+        },
+        "minute_label": {
+          "type": "string",
+          "label": {
+            "zh": "原始进球时刻，如90+4",
+            "en": "Original time notation, e.g. 90+4"
+          }
+        },
+        "minute_base": {
+          "type": "integer",
+          "label": {
+            "zh": "分钟基础数字",
+            "en": "Minute base integer"
+          }
+        },
+        "minute_added": {
+          "type": "integer",
+          "label": {
+            "zh": "伤停补时数字",
+            "en": "Stoppage time integer"
+          }
+        },
+        "is_own_goal": {
+          "type": "boolean",
+          "label": {
+            "zh": "是否乌龙球",
+            "en": "Whether own goal"
+          }
+        },
+        "is_penalty": {
+          "type": "boolean",
+          "label": {
+            "zh": "是否为常规/加时点球进球",
+            "en": "Goal scored from penalty kick in play"
+          }
+        },
+        "x": {
+          "type": "float nullable",
+          "label": {
+            "zh": "球场X坐标，来源未提供",
+            "en": "Pitch X coordinate: unavailable"
+          }
+        }
+      }
+    },
+    "teams": {
+      "columns": {
+        "team_id": {
+          "type": "string",
+          "label": {
+            "zh": "球队主键",
+            "en": "Team identifier"
+          }
+        },
+        "name_en": {
+          "type": "string",
+          "label": {
+            "zh": "英文原始球队名称",
+            "en": "English team label"
+          }
+        },
+        "name_zh": {
+          "type": "string",
+          "label": {
+            "zh": "中文显示名称，未翻译时回退英文",
+            "en": "Chinese team display name, fallback English"
+          }
+        },
+        "group": {
+          "type": "category",
+          "label": {
+            "zh": "组别（可能缺失）",
+            "en": "Assigned group, nullable"
+          }
+        }
+      }
+    },
+    "venues": {
+      "columns": {
+        "venue_id": {
+          "type": "string",
+          "label": {
+            "zh": "场地主键",
+            "en": "Venue primary key"
+          }
+        },
+        "name_en": {
+          "type": "string",
+          "label": {
+            "zh": "上游场地名",
+            "en": "Upstream venue label"
+          }
+        },
+        "latitude": {
+          "type": "float nullable",
+          "label": {
+            "zh": "纬度未核实，不可用于地图",
+            "en": "Unverified latitude, do not map"
+          }
+        },
+        "longitude": {
+          "type": "float nullable",
+          "label": {
+            "zh": "经度未核实，不可用于地图",
+            "en": "Unverified longitude, do not map"
+          }
+        }
+      }
+    }
+  }
+}

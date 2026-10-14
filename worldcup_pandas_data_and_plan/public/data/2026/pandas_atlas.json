@@ -1,0 +1,780 @@
+{
+  "schema_version": "1.0.0",
+  "definition": "A UI capability map, not a promise that every pandas API has a drag-and-drop interface",
+  "methods": [
+    {
+      "id": 1,
+      "category": "Inspection",
+      "name": {
+        "zh": "数据概览",
+        "en": "Data inspection"
+      },
+      "pandas": "head / tail / sample",
+      "visual_ui": {
+        "zh": "可滚动数据表",
+        "en": "Scrollable grid"
+      },
+      "world_cup_question": {
+        "zh": "比赛记录概览",
+        "en": "Match preview"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 2,
+      "category": "Inspection",
+      "name": {
+        "zh": "数据形状",
+        "en": "Shape & columns"
+      },
+      "pandas": "shape / columns / dtypes",
+      "visual_ui": {
+        "zh": "字段分布和类型图",
+        "en": "Schema explorer"
+      },
+      "world_cup_question": {
+        "zh": "了解数据结构",
+        "en": "Inspect schema"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 3,
+      "category": "Inspection",
+      "name": {
+        "zh": "描述统计",
+        "en": "Descriptive statistics"
+      },
+      "pandas": "describe / nunique",
+      "visual_ui": {
+        "zh": "数字指标卡",
+        "en": "Summary cards"
+      },
+      "world_cup_question": {
+        "zh": "每场进球分布",
+        "en": "Goals per match"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 4,
+      "category": "Selection",
+      "name": {
+        "zh": "行列选择",
+        "en": "Row and column selection"
+      },
+      "pandas": "loc / iloc",
+      "visual_ui": {
+        "zh": "列拖拽与多选",
+        "en": "Column picker"
+      },
+      "world_cup_question": {
+        "zh": "选择某球队比赛",
+        "en": "Select team matches"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 5,
+      "category": "Selection",
+      "name": {
+        "zh": "条件查询",
+        "en": "Query and boolean masks"
+      },
+      "pandas": "query / isin / between",
+      "visual_ui": {
+        "zh": "可视化筛选器",
+        "en": "Visual filters"
+      },
+      "world_cup_question": {
+        "zh": "选择比赛阶段",
+        "en": "Select tournament stages"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 6,
+      "category": "Selection",
+      "name": {
+        "zh": "排序与前N",
+        "en": "Sort and top N"
+      },
+      "pandas": "sort_values / nlargest / nsmallest",
+      "visual_ui": {
+        "zh": "排行榜",
+        "en": "Rank chart"
+      },
+      "world_cup_question": {
+        "zh": "进球排行",
+        "en": "Goals leaderboard"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 7,
+      "category": "Selection",
+      "name": {
+        "zh": "索引",
+        "en": "Index operations"
+      },
+      "pandas": "set_index / reset_index / reindex",
+      "visual_ui": {
+        "zh": "索引层级树",
+        "en": "Index tree"
+      },
+      "world_cup_question": {
+        "zh": "球队+阶段复合索引",
+        "en": "Team-stage index"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 8,
+      "category": "Cleaning",
+      "name": {
+        "zh": "重命名",
+        "en": "Rename columns"
+      },
+      "pandas": "rename",
+      "visual_ui": {
+        "zh": "字段管理器",
+        "en": "Field editor"
+      },
+      "world_cup_question": {
+        "zh": "统一字段名称",
+        "en": "Standardize names"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 9,
+      "category": "Cleaning",
+      "name": {
+        "zh": "缺失值审计",
+        "en": "Missing value audit"
+      },
+      "pandas": "isna / notna",
+      "visual_ui": {
+        "zh": "缺失矩阵",
+        "en": "Missingness matrix"
+      },
+      "world_cup_question": {
+        "zh": "未提供射门统计",
+        "en": "Unavailable shots"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 10,
+      "category": "Cleaning",
+      "name": {
+        "zh": "缺失值处理",
+        "en": "Missing value processing"
+      },
+      "pandas": "fillna / dropna / interpolate",
+      "visual_ui": {
+        "zh": "处理预览",
+        "en": "Cleaning preview"
+      },
+      "world_cup_question": {
+        "zh": "上传数据中的缺失值",
+        "en": "Upload missingness"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 11,
+      "category": "Cleaning",
+      "name": {
+        "zh": "重复记录",
+        "en": "Deduplication"
+      },
+      "pandas": "duplicated / drop_duplicates",
+      "visual_ui": {
+        "zh": "重复键高亮",
+        "en": "Duplicate highlights"
+      },
+      "world_cup_question": {
+        "zh": "重复比赛ID",
+        "en": "Duplicate IDs"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 12,
+      "category": "Cleaning",
+      "name": {
+        "zh": "类型转换",
+        "en": "Type conversion"
+      },
+      "pandas": "astype / to_numeric / to_datetime",
+      "visual_ui": {
+        "zh": "字段类型指示器",
+        "en": "Type inspector"
+      },
+      "world_cup_question": {
+        "zh": "将分钟字符串解析",
+        "en": "Parse minute labels"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 13,
+      "category": "Cleaning",
+      "name": {
+        "zh": "字符串处理",
+        "en": "String cleaning"
+      },
+      "pandas": "str.strip / str.replace / str.contains",
+      "visual_ui": {
+        "zh": "文本规则构造器",
+        "en": "Text rules"
+      },
+      "world_cup_question": {
+        "zh": "球队名称标准化",
+        "en": "Normalize team names"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 14,
+      "category": "Cleaning",
+      "name": {
+        "zh": "数值清洗",
+        "en": "Numeric replacements"
+      },
+      "pandas": "replace / clip / round",
+      "visual_ui": {
+        "zh": "分位区间对比",
+        "en": "Range preview"
+      },
+      "world_cup_question": {
+        "zh": "极端值修正",
+        "en": "Outlier management"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 15,
+      "category": "Aggregation",
+      "name": {
+        "zh": "分组统计",
+        "en": "Group by"
+      },
+      "pandas": "groupby / agg",
+      "visual_ui": {
+        "zh": "字段货架",
+        "en": "Group shelves"
+      },
+      "world_cup_question": {
+        "zh": "球队胜平负统计",
+        "en": "Team results"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 16,
+      "category": "Aggregation",
+      "name": {
+        "zh": "组内变换",
+        "en": "Group transform"
+      },
+      "pandas": "groupby.transform",
+      "visual_ui": {
+        "zh": "分组偏差图",
+        "en": "Group deviation"
+      },
+      "world_cup_question": {
+        "zh": "对比组内平均",
+        "en": "Compare group mean"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 17,
+      "category": "Aggregation",
+      "name": {
+        "zh": "频次统计",
+        "en": "Counts & frequencies"
+      },
+      "pandas": "value_counts / crosstab",
+      "visual_ui": {
+        "zh": "频次热力图",
+        "en": "Count heatmap"
+      },
+      "world_cup_question": {
+        "zh": "每类进球数",
+        "en": "Goals by type"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 18,
+      "category": "Aggregation",
+      "name": {
+        "zh": "分组过滤",
+        "en": "Group filtering"
+      },
+      "pandas": "groupby.filter",
+      "visual_ui": {
+        "zh": "阈值筛选器",
+        "en": "Threshold filter"
+      },
+      "world_cup_question": {
+        "zh": "至少3场球队",
+        "en": "Teams with 3+ matches"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 19,
+      "category": "Reshaping",
+      "name": {
+        "zh": "透视表",
+        "en": "Pivot table"
+      },
+      "pandas": "pivot_table / pivot",
+      "visual_ui": {
+        "zh": "透视画布",
+        "en": "Pivot canvas"
+      },
+      "world_cup_question": {
+        "zh": "阶段×球队矩阵",
+        "en": "Stage x team"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 20,
+      "category": "Reshaping",
+      "name": {
+        "zh": "宽长表转换",
+        "en": "Wide to long"
+      },
+      "pandas": "melt / stack / unstack",
+      "visual_ui": {
+        "zh": "表格形状动画",
+        "en": "Shape animation"
+      },
+      "world_cup_question": {
+        "zh": "进球失球拆列",
+        "en": "Goals-for-against"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 21,
+      "category": "Reshaping",
+      "name": {
+        "zh": "交叉矩阵",
+        "en": "Cross-tabulation"
+      },
+      "pandas": "crosstab",
+      "visual_ui": {
+        "zh": "马赛克图",
+        "en": "Mosaic chart"
+      },
+      "world_cup_question": {
+        "zh": "阶段×结果",
+        "en": "Stage x outcomes"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 22,
+      "category": "Reshaping",
+      "name": {
+        "zh": "展开数组",
+        "en": "Expand nested arrays"
+      },
+      "pandas": "explode / json_normalize",
+      "visual_ui": {
+        "zh": "JSON 树视图",
+        "en": "JSON tree"
+      },
+      "world_cup_question": {
+        "zh": "进球数组拆表",
+        "en": "Flatten goal lists"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 23,
+      "category": "Combining",
+      "name": {
+        "zh": "表关联",
+        "en": "Merge tables"
+      },
+      "pandas": "merge / join",
+      "visual_ui": {
+        "zh": "连线关系图",
+        "en": "Join canvas"
+      },
+      "world_cup_question": {
+        "zh": "比赛表关联球队表",
+        "en": "Join matches+teams"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 24,
+      "category": "Combining",
+      "name": {
+        "zh": "纵向拼接",
+        "en": "Concatenate"
+      },
+      "pandas": "concat",
+      "visual_ui": {
+        "zh": "数据堆叠预览",
+        "en": "Table stacking"
+      },
+      "world_cup_question": {
+        "zh": "多个数据集拼接",
+        "en": "Multi dataset append"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 25,
+      "category": "Combining",
+      "name": {
+        "zh": "键完整性",
+        "en": "Merge validation"
+      },
+      "pandas": "merge(validate=...) / indicator",
+      "visual_ui": {
+        "zh": "匹配率",
+        "en": "Match diagnostics"
+      },
+      "world_cup_question": {
+        "zh": "一对多误关联",
+        "en": "Wrong joins"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 26,
+      "category": "Time",
+      "name": {
+        "zh": "日期字段",
+        "en": "Date time features"
+      },
+      "pandas": "to_datetime / dt",
+      "visual_ui": {
+        "zh": "时间粒度选择器",
+        "en": "Time granularity"
+      },
+      "world_cup_question": {
+        "zh": "按日期查看进球",
+        "en": "Goals by day"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 27,
+      "category": "Time",
+      "name": {
+        "zh": "重新采样",
+        "en": "Resampling"
+      },
+      "pandas": "resample",
+      "visual_ui": {
+        "zh": "日历热图",
+        "en": "Calendar heatmap"
+      },
+      "world_cup_question": {
+        "zh": "每日比赛",
+        "en": "Daily matches"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 28,
+      "category": "Time",
+      "name": {
+        "zh": "滚动分析",
+        "en": "Rolling analytics"
+      },
+      "pandas": "rolling / expanding",
+      "visual_ui": {
+        "zh": "时间窗滑块",
+        "en": "Moving window"
+      },
+      "world_cup_question": {
+        "zh": "连续三场进球",
+        "en": "3-game average"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 29,
+      "category": "Time",
+      "name": {
+        "zh": "指数窗口",
+        "en": "EWM smoothing"
+      },
+      "pandas": "ewm",
+      "visual_ui": {
+        "zh": "平滑强度滑块",
+        "en": "Smoothing slider"
+      },
+      "world_cup_question": {
+        "zh": "得分趋势平滑",
+        "en": "Smooth performance"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 30,
+      "category": "Time",
+      "name": {
+        "zh": "时间差",
+        "en": "Temporal deltas"
+      },
+      "pandas": "diff / shift / pct_change",
+      "visual_ui": {
+        "zh": "变化趋势图",
+        "en": "Change chart"
+      },
+      "world_cup_question": {
+        "zh": "场均指标变化",
+        "en": "Match changes"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 31,
+      "category": "Numeric",
+      "name": {
+        "zh": "计算列",
+        "en": "Calculated fields"
+      },
+      "pandas": "assign / eval",
+      "visual_ui": {
+        "zh": "公式编辑器",
+        "en": "Formula builder"
+      },
+      "world_cup_question": {
+        "zh": "净胜球",
+        "en": "Goal difference"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 32,
+      "category": "Numeric",
+      "name": {
+        "zh": "区间分桶",
+        "en": "Binning"
+      },
+      "pandas": "cut / qcut",
+      "visual_ui": {
+        "zh": "可拖拽直方图",
+        "en": "Binning histogram"
+      },
+      "world_cup_question": {
+        "zh": "进球数分级",
+        "en": "Goal bins"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 33,
+      "category": "Numeric",
+      "name": {
+        "zh": "排名",
+        "en": "Rank analysis"
+      },
+      "pandas": "rank / cumcount",
+      "visual_ui": {
+        "zh": "排名变化图",
+        "en": "Rank trajectory"
+      },
+      "world_cup_question": {
+        "zh": "射手名次",
+        "en": "Goal scorer rank"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 34,
+      "category": "Numeric",
+      "name": {
+        "zh": "累计统计",
+        "en": "Cumulative calculations"
+      },
+      "pandas": "cumsum / cummax / cumprod",
+      "visual_ui": {
+        "zh": "累积阶梯图",
+        "en": "Cumulative step"
+      },
+      "world_cup_question": {
+        "zh": "累计进球",
+        "en": "Cumulative goals"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 35,
+      "category": "Numeric",
+      "name": {
+        "zh": "相关性",
+        "en": "Correlation"
+      },
+      "pandas": "corr / cov",
+      "visual_ui": {
+        "zh": "散点矩阵",
+        "en": "Scatter matrix"
+      },
+      "world_cup_question": {
+        "zh": "进球和失球关系",
+        "en": "GF GA relation"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 36,
+      "category": "Numeric",
+      "name": {
+        "zh": "统计分位数",
+        "en": "Quantiles"
+      },
+      "pandas": "quantile / median / std / var",
+      "visual_ui": {
+        "zh": "箱线图",
+        "en": "Boxplot"
+      },
+      "world_cup_question": {
+        "zh": "球队得分分布",
+        "en": "Score distribution"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 37,
+      "category": "Categorical",
+      "name": {
+        "zh": "类别型数据",
+        "en": "Categoricals"
+      },
+      "pandas": "astype(category) / cat",
+      "visual_ui": {
+        "zh": "分类树",
+        "en": "Category tree"
+      },
+      "world_cup_question": {
+        "zh": "小组阶段分类",
+        "en": "Stage categories"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 38,
+      "category": "Categorical",
+      "name": {
+        "zh": "多级索引",
+        "en": "Hierarchical indexing"
+      },
+      "pandas": "MultiIndex",
+      "visual_ui": {
+        "zh": "钻取树",
+        "en": "Drill-down tree"
+      },
+      "world_cup_question": {
+        "zh": "小组 → 球队",
+        "en": "Group to team"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 39,
+      "category": "Advanced",
+      "name": {
+        "zh": "自定义函数",
+        "en": "Custom formulas"
+      },
+      "pandas": "apply / map / pipe",
+      "visual_ui": {
+        "zh": "节点和公式编辑器",
+        "en": "Function node"
+      },
+      "world_cup_question": {
+        "zh": "自定义比赛评分",
+        "en": "Custom match score"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 40,
+      "category": "Advanced",
+      "name": {
+        "zh": "窗口组内",
+        "en": "Grouped windows"
+      },
+      "pandas": "groupby().rolling()",
+      "visual_ui": {
+        "zh": "分组时间曲线",
+        "en": "Grouped timelines"
+      },
+      "world_cup_question": {
+        "zh": "按球队近期表现",
+        "en": "Recent team trends"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 41,
+      "category": "IO",
+      "name": {
+        "zh": "JSON 读写",
+        "en": "JSON I/O"
+      },
+      "pandas": "read_json / to_json",
+      "visual_ui": {
+        "zh": "导入导出向导",
+        "en": "JSON importer"
+      },
+      "world_cup_question": {
+        "zh": "JSON 文件加载",
+        "en": "Load JSON"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 42,
+      "category": "IO",
+      "name": {
+        "zh": "多格式导入",
+        "en": "Transient data import"
+      },
+      "pandas": "read_csv / read_excel (if available)",
+      "visual_ui": {
+        "zh": "上传映射器",
+        "en": "Import mapping"
+      },
+      "world_cup_question": {
+        "zh": "上传CSV转换为内存记录",
+        "en": "Upload CSV"
+      },
+      "mode": "visual_first"
+    },
+    {
+      "id": 43,
+      "category": "Quality",
+      "name": {
+        "zh": "断言和审计",
+        "en": "Data validation"
+      },
+      "pandas": "duplicated / merge / isna",
+      "visual_ui": {
+        "zh": "质量看板",
+        "en": "Quality board"
+      },
+      "world_cup_question": {
+        "zh": "进球比分校验",
+        "en": "Goal-count checks"
+      },
+      "mode": "visual_first"
+    }
+  ]
+}

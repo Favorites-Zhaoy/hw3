@@ -1,0 +1,157 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "fifa-world-cup-2026-full",
+  "table": "venues",
+  "meta": {
+    "source": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json",
+    "snapshot_date": "2026-10-15",
+    "scope": "complete_tournament",
+    "row_count": 16
+  },
+  "rows": [
+    {
+      "venue_id": "mexico-city",
+      "name_en": "Mexico City",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "guadalajara-zapopan",
+      "name_en": "Guadalajara (Zapopan)",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "atlanta",
+      "name_en": "Atlanta",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "monterrey-guadalupe",
+      "name_en": "Monterrey (Guadalupe)",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "toronto",
+      "name_en": "Toronto",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "san-francisco-bay-area-santa-clara",
+      "name_en": "San Francisco Bay Area (Santa Clara)",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "los-angeles-inglewood",
+      "name_en": "Los Angeles (Inglewood)",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "vancouver",
+      "name_en": "Vancouver",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "seattle",
+      "name_en": "Seattle",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "new-york-new-jersey-east-rutherford",
+      "name_en": "New York/New Jersey (East Rutherford)",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "boston-foxborough",
+      "name_en": "Boston (Foxborough)",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "philadelphia",
+      "name_en": "Philadelphia",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "miami-miami-gardens",
+      "name_en": "Miami (Miami Gardens)",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "houston",
+      "name_en": "Houston",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "kansas-city",
+      "name_en": "Kansas City",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    },
+    {
+      "venue_id": "dallas-arlington",
+      "name_en": "Dallas (Arlington)",
+      "name_zh": null,
+      "country": null,
+      "latitude": null,
+      "longitude": null,
+      "geo_verified": false
+    }
+  ]
+}

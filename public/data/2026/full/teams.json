@@ -1,0 +1,349 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "fifa-world-cup-2026-full",
+  "table": "teams",
+  "meta": {
+    "source": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json",
+    "snapshot_date": "2026-10-15",
+    "scope": "complete_tournament",
+    "row_count": 48
+  },
+  "rows": [
+    {
+      "team_id": "algeria",
+      "name_en": "Algeria",
+      "name_zh": "阿尔及利亚",
+      "group": "Group J",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "argentina",
+      "name_en": "Argentina",
+      "name_zh": "阿根廷",
+      "group": "Group J",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "australia",
+      "name_en": "Australia",
+      "name_zh": "澳大利亚",
+      "group": "Group D",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "austria",
+      "name_en": "Austria",
+      "name_zh": "奥地利",
+      "group": "Group J",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "belgium",
+      "name_en": "Belgium",
+      "name_zh": "比利时",
+      "group": "Group G",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "bosnia-herzegovina",
+      "name_en": "Bosnia & Herzegovina",
+      "name_zh": "波黑",
+      "group": "Group B",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "brazil",
+      "name_en": "Brazil",
+      "name_zh": "巴西",
+      "group": "Group C",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "canada",
+      "name_en": "Canada",
+      "name_zh": "加拿大",
+      "group": "Group B",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "cape-verde",
+      "name_en": "Cape Verde",
+      "name_zh": "佛得角",
+      "group": "Group H",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "colombia",
+      "name_en": "Colombia",
+      "name_zh": "哥伦比亚",
+      "group": "Group K",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "croatia",
+      "name_en": "Croatia",
+      "name_zh": "克罗地亚",
+      "group": "Group L",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "curacao",
+      "name_en": "Curaçao",
+      "name_zh": "库拉索",
+      "group": "Group E",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "czech-republic",
+      "name_en": "Czech Republic",
+      "name_zh": "捷克",
+      "group": "Group A",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "dr-congo",
+      "name_en": "DR Congo",
+      "name_zh": "刚果民主共和国",
+      "group": "Group K",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "ecuador",
+      "name_en": "Ecuador",
+      "name_zh": "厄瓜多尔",
+      "group": "Group E",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "egypt",
+      "name_en": "Egypt",
+      "name_zh": "埃及",
+      "group": "Group G",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "england",
+      "name_en": "England",
+      "name_zh": "英格兰",
+      "group": "Group L",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "france",
+      "name_en": "France",
+      "name_zh": "法国",
+      "group": "Group I",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "germany",
+      "name_en": "Germany",
+      "name_zh": "德国",
+      "group": "Group E",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "ghana",
+      "name_en": "Ghana",
+      "name_zh": "加纳",
+      "group": "Group L",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "haiti",
+      "name_en": "Haiti",
+      "name_zh": "海地",
+      "group": "Group C",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "iran",
+      "name_en": "Iran",
+      "name_zh": "伊朗",
+      "group": "Group G",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "iraq",
+      "name_en": "Iraq",
+      "name_zh": "伊拉克",
+      "group": "Group I",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "ivory-coast",
+      "name_en": "Ivory Coast",
+      "name_zh": "科特迪瓦",
+      "group": "Group E",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "japan",
+      "name_en": "Japan",
+      "name_zh": "日本",
+      "group": "Group F",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "jordan",
+      "name_en": "Jordan",
+      "name_zh": "约旦",
+      "group": "Group J",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "mexico",
+      "name_en": "Mexico",
+      "name_zh": "墨西哥",
+      "group": "Group A",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "morocco",
+      "name_en": "Morocco",
+      "name_zh": "摩洛哥",
+      "group": "Group C",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "netherlands",
+      "name_en": "Netherlands",
+      "name_zh": "荷兰",
+      "group": "Group F",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "new-zealand",
+      "name_en": "New Zealand",
+      "name_zh": "新西兰",
+      "group": "Group G",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "norway",
+      "name_en": "Norway",
+      "name_zh": "挪威",
+      "group": "Group I",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "panama",
+      "name_en": "Panama",
+      "name_zh": "巴拿马",
+      "group": "Group L",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "paraguay",
+      "name_en": "Paraguay",
+      "name_zh": "巴拉圭",
+      "group": "Group D",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "portugal",
+      "name_en": "Portugal",
+      "name_zh": "葡萄牙",
+      "group": "Group K",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "qatar",
+      "name_en": "Qatar",
+      "name_zh": "卡塔尔",
+      "group": "Group B",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "saudi-arabia",
+      "name_en": "Saudi Arabia",
+      "name_zh": "沙特阿拉伯",
+      "group": "Group H",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "scotland",
+      "name_en": "Scotland",
+      "name_zh": "苏格兰",
+      "group": "Group C",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "senegal",
+      "name_en": "Senegal",
+      "name_zh": "塞内加尔",
+      "group": "Group I",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "south-africa",
+      "name_en": "South Africa",
+      "name_zh": "南非",
+      "group": "Group A",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "south-korea",
+      "name_en": "South Korea",
+      "name_zh": "韩国",
+      "group": "Group A",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "spain",
+      "name_en": "Spain",
+      "name_zh": "西班牙",
+      "group": "Group H",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "sweden",
+      "name_en": "Sweden",
+      "name_zh": "瑞典",
+      "group": "Group F",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "switzerland",
+      "name_en": "Switzerland",
+      "name_zh": "瑞士",
+      "group": "Group B",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "tunisia",
+      "name_en": "Tunisia",
+      "name_zh": "突尼斯",
+      "group": "Group F",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "turkey",
+      "name_en": "Turkey",
+      "name_zh": "土耳其",
+      "group": "Group D",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "uruguay",
+      "name_en": "Uruguay",
+      "name_zh": "乌拉圭",
+      "group": "Group H",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "usa",
+      "name_en": "USA",
+      "name_zh": "美国",
+      "group": "Group D",
+      "label_status": "translated"
+    },
+    {
+      "team_id": "uzbekistan",
+      "name_en": "Uzbekistan",
+      "name_zh": "乌兹别克斯坦",
+      "group": "Group K",
+      "label_status": "translated"
+    }
+  ]
+}

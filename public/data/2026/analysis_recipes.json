@@ -1,0 +1,298 @@
+{
+  "schema_version": "1.0.0",
+  "title": {
+    "zh": "分析模板",
+    "en": "Analysis recipes"
+  },
+  "recipes": [
+    {
+      "id": "overview",
+      "title": {
+        "zh": "世界杯概览",
+        "en": "World Cup Overview"
+      },
+      "base_table": "matches",
+      "required_fields": [
+        "group",
+        "date",
+        "ft1",
+        "ft2"
+      ],
+      "visualization": {
+        "zh": "赛事KPI与日期分布",
+        "en": "Tournament KPIs and daily timeline"
+      },
+      "pandas_methods": [
+        "dropna",
+        "assign",
+        "groupby"
+      ],
+      "data_guard": "require_columns",
+      "fully_available_offline": true
+    },
+    {
+      "id": "team-path",
+      "title": {
+        "zh": "球队晋级之路",
+        "en": "Team Journey"
+      },
+      "base_table": "team_matches",
+      "required_fields": [
+        "team_id",
+        "stage",
+        "date",
+        "result_90"
+      ],
+      "visualization": {
+        "zh": "阶段×比赛结果流",
+        "en": "Stages and match outcome flow"
+      },
+      "pandas_methods": [
+        "query",
+        "sort_values",
+        "groupby"
+      ],
+      "data_guard": "require_columns",
+      "fully_available_offline": true
+    },
+    {
+      "id": "goals-leaders",
+      "title": {
+        "zh": "进球贡献与进球榜",
+        "en": "Goal Contributions and Scorers"
+      },
+      "base_table": "goals",
+      "required_fields": [
+        "player_name",
+        "scoring_team_id",
+        "is_own_goal"
+      ],
+      "visualization": {
+        "zh": "射手排行与乌龙球排除",
+        "en": "Top scorers excluding own goals"
+      },
+      "pandas_methods": [
+        "query",
+        "groupby",
+        "size",
+        "sort_values"
+      ],
+      "data_guard": "require_columns",
+      "fully_available_offline": true
+    },
+    {
+      "id": "goal-time",
+      "title": {
+        "zh": "进球时间分布",
+        "en": "Goal Timing"
+      },
+      "base_table": "goals",
+      "required_fields": [
+        "minute_base",
+        "minute_added",
+        "phase"
+      ],
+      "visualization": {
+        "zh": "伤停补时分布与时间段区间",
+        "en": "Stoppage and goal time bands"
+      },
+      "pandas_methods": [
+        "cut",
+        "value_counts",
+        "groupby"
+      ],
+      "data_guard": "require_columns",
+      "fully_available_offline": true
+    },
+    {
+      "id": "group-matrix",
+      "title": {
+        "zh": "小组比赛矩阵",
+        "en": "Group Results Matrix"
+      },
+      "base_table": "team_matches",
+      "required_fields": [
+        "group",
+        "team_id",
+        "goals_for_90"
+      ],
+      "visualization": {
+        "zh": "球队×小组透视矩阵",
+        "en": "Team-group pivot matrix"
+      },
+      "pandas_methods": [
+        "pivot_table",
+        "groupby"
+      ],
+      "data_guard": "require_columns",
+      "fully_available_offline": true
+    },
+    {
+      "id": "team-form",
+      "title": {
+        "zh": "最近三场走势",
+        "en": "Recent Three Match Form"
+      },
+      "base_table": "team_matches",
+      "required_fields": [
+        "date",
+        "team_id",
+        "goals_for_90"
+      ],
+      "visualization": {
+        "zh": "滚动场均进球曲线",
+        "en": "Rolling goals per game"
+      },
+      "pandas_methods": [
+        "sort_values",
+        "groupby",
+        "rolling"
+      ],
+      "data_guard": "require_columns",
+      "fully_available_offline": true
+    },
+    {
+      "id": "match-drill",
+      "title": {
+        "zh": "比赛详情追踪",
+        "en": "Match Detail Drilldown"
+      },
+      "base_table": "matches",
+      "required_fields": [
+        "match_id",
+        "team1_id",
+        "team2_id"
+      ],
+      "visualization": {
+        "zh": "比赛→进球列表联动",
+        "en": "Match to goal events drilldown"
+      },
+      "pandas_methods": [
+        "merge",
+        "query"
+      ],
+      "data_guard": "require_columns",
+      "fully_available_offline": true
+    },
+    {
+      "id": "join-lab",
+      "title": {
+        "zh": "可视化表关联",
+        "en": "Visual Join Lab"
+      },
+      "base_table": "matches",
+      "required_fields": [
+        "match_id",
+        "team1_id",
+        "team2_id"
+      ],
+      "visualization": {
+        "zh": "比赛×球队×进球连接",
+        "en": "Join matches teams goals"
+      },
+      "pandas_methods": [
+        "merge",
+        "validate"
+      ],
+      "data_guard": "require_columns",
+      "fully_available_offline": true
+    },
+    {
+      "id": "quality",
+      "title": {
+        "zh": "数据质量审计",
+        "en": "Data Quality Audit"
+      },
+      "base_table": "team_matches",
+      "required_fields": [
+        "shots",
+        "xg",
+        "team_id"
+      ],
+      "visualization": {
+        "zh": "缺失值热力图与列覆盖率",
+        "en": "Missingness heatmap and field coverage"
+      },
+      "pandas_methods": [
+        "isna",
+        "sum",
+        "duplicated"
+      ],
+      "data_guard": "require_columns",
+      "fully_available_offline": true
+    },
+    {
+      "id": "knockout",
+      "title": {
+        "zh": "淘汰赛胜负",
+        "en": "Knockout Outcomes"
+      },
+      "base_table": "matches",
+      "required_fields": [
+        "stage",
+        "et1",
+        "et2",
+        "penalties1",
+        "penalties2"
+      ],
+      "visualization": {
+        "zh": "常规时间与加时赛区别",
+        "en": "Regulation vs extra-time outcomes"
+      },
+      "pandas_methods": [
+        "loc",
+        "assign",
+        "groupby"
+      ],
+      "data_guard": "require_columns",
+      "fully_available_offline": true
+    },
+    {
+      "id": "venue",
+      "title": {
+        "zh": "场地进球分布",
+        "en": "Goals by Venue"
+      },
+      "base_table": "matches",
+      "required_fields": [
+        "venue_id",
+        "ft1",
+        "ft2"
+      ],
+      "visualization": {
+        "zh": "球场分组进球统计",
+        "en": "Venue goals aggregation"
+      },
+      "pandas_methods": [
+        "assign",
+        "groupby",
+        "sort_values"
+      ],
+      "data_guard": "require_columns",
+      "fully_available_offline": true
+    },
+    {
+      "id": "code",
+      "title": {
+        "zh": "代码-图形同步",
+        "en": "Code and Visual Sync"
+      },
+      "base_table": "team_matches",
+      "required_fields": [
+        "team_id",
+        "goals_for_90"
+      ],
+      "visualization": {
+        "zh": "生成可运行pandas工作流",
+        "en": "Generate executable pandas workflow"
+      },
+      "pandas_methods": [
+        "groupby",
+        "agg",
+        "sort_values"
+      ],
+      "data_guard": "require_columns",
+      "fully_available_offline": true
+    }
+  ]
+}
