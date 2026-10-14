@@ -2,6 +2,8 @@
 
 可视化导论 HW3。以足球飞向镜头的 3D 开场进入世界杯数据工作台，使用 D3.js 探索赛事，并在浏览器 Web Worker 中使用真实 pandas 计算。纯静态应用，无业务后端。
 
+在线作业：[https://favorites-zhaoy.github.io/hw3/](https://favorites-zhaoy.github.io/hw3/)。
+
 ## 本地运行
 
 需要 Node.js 18+（推荐 22）。在本目录打开终端：
