@@ -1,9 +1,9 @@
 import {useEffect,useRef,useState} from 'react';
 import * as THREE from 'three';
 export default function Football({replay=0}:{replay?:number}){
-  const host=useRef<HTMLDivElement>(null);const [fallback,setFallback]=useState(false);const [intro,setIntro]=useState(true);
+  const host=useRef<HTMLDivElement>(null);const initialIntro=useRef(sessionStorage.getItem('wcl-kickoff-v2')!=='seen');const [fallback,setFallback]=useState(false);const [intro,setIntro]=useState(initialIntro.current);
   useEffect(()=>{
-    if(!host.current)return;setIntro(!matchMedia('(prefers-reduced-motion: reduce)').matches);
+    if(!host.current)return;const fly=(replay>0||initialIntro.current)&&!matchMedia('(prefers-reduced-motion: reduce)').matches;setIntro(fly);sessionStorage.setItem('wcl-kickoff-v2','seen');
     const el=host.current;let renderer:THREE.WebGLRenderer;
     try{renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});}catch{setFallback(true);return;}
     renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x000000,0);el.appendChild(renderer.domElement);
@@ -38,10 +38,10 @@ export default function Football({replay=0}:{replay?:number}){
     const circle=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({length:100},(_,i)=>new THREE.Vector3(Math.cos(i/100*Math.PI*2)*2.2,Math.sin(i/100*Math.PI*2)*2.2,.01))),new THREE.LineBasicMaterial({color:0xc2c39b,transparent:true,opacity:.4}));field.add(circle);
     const halo=new THREE.Mesh(new THREE.RingGeometry(1.7,1.72,100),new THREE.MeshBasicMaterial({color:0xe2b66a,transparent:true,opacity:.5,side:THREE.DoubleSide}));halo.position.z=-1.2;scene.add(halo);
     let w=el.clientWidth,h=el.clientHeight;const resize=()=>{w=el.clientWidth;h=el.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();};resize();const ro=new ResizeObserver(resize);ro.observe(el);
-    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;const introTimer=setTimeout(()=>setIntro(false),2600);const start=performance.now();let raf=0;let mx=0,my=0;
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;const introTimer=setTimeout(()=>setIntro(false),1200);const start=performance.now();let raf=0;let mx=0,my=0;
     const move=(e:PointerEvent)=>{const r=el.getBoundingClientRect();mx=(e.clientX-r.left)/r.width-.5;my=(e.clientY-r.top)/r.height-.5;};el.addEventListener('pointermove',move);
     const animate=()=>{const t=(performance.now()-start)/1000;
-      if(!reduced&&t<2.5){const p=Math.min(t/2.5,1);ball.position.z=p<.64 ? -14+19*Math.pow(p/.64,2.3) : 5*(1-(p-.64)/.36);ball.position.y=.4*Math.sin(p*Math.PI);ball.rotation.set(p*3,p*6,p*.7);}else{ball.position.z=0;ball.position.y=reduced?0:Math.sin(t*.75)*.12;ball.rotation.y=reduced?.3:t*.17+mx*.3;ball.rotation.x=my*.25;}
+      if(fly&&t<1.15){const p=Math.min(t/1.15,1);ball.position.z=p<.64 ? -14+19*Math.pow(p/.64,2.3) : 5*(1-(p-.64)/.36);ball.position.y=.4*Math.sin(p*Math.PI);ball.rotation.set(p*3,p*6,p*.7);}else{ball.position.z=0;ball.position.y=reduced?0:Math.sin(t*.75)*.12;ball.rotation.y=reduced?.3:t*.17+mx*.3;ball.rotation.x=my*.25;}
       renderer.render(scene,camera);if(!reduced||t<.1)raf=requestAnimationFrame(animate);
     };animate();
     return()=>{clearTimeout(introTimer);cancelAnimationFrame(raf);ro.disconnect();el.removeEventListener('pointermove',move);scene.traverse(o=>{if(o instanceof THREE.Mesh||o instanceof THREE.Line){o.geometry.dispose();const m=o.material;(Array.isArray(m)?m:[m]).forEach(x=>x.dispose());}});renderer.dispose();renderer.domElement.remove();};

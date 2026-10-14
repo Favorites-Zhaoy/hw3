@@ -2,6 +2,8 @@
 
 日期：2026-10-15，Asia/Singapore。
 
+> 下方保留 v1 验收历史。v2 已完成 31 项测试、统一 pandas 核心计算、4 个独立故事与图表优先的实验室；见 [v2 改版验收](REVISION.md)。
+
 ## 自动验证
 
 - `npm run build`：TypeScript 与 Vite 生产构建通过，3D 场景分块懒加载，D3 与应用打包为静态资源。

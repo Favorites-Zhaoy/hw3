@@ -335,12 +335,12 @@
       },
       "pandas": "pivot_table / pivot",
       "visual_ui": {
-        "zh": "透视画布",
-        "en": "Pivot canvas"
+        "zh": "阶段与时段透视热力图",
+        "en": "Stage-time pivot heatmap"
       },
       "world_cup_question": {
-        "zh": "阶段×球队矩阵",
-        "en": "Stage x team"
+        "zh": "不同阶段在哪些时段进球？",
+        "en": "At what times do different stages score?"
       },
       "mode": "visual_first"
     },

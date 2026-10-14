@@ -1,7 +1,9 @@
 // One operation protocol produces the exact Python executed by the worker.
+import {compileVisualAnalysis} from './visualAnalysis.mjs';
 const q = v => JSON.stringify(v);
 const literal = v => v === null ? 'None' : typeof v === 'boolean' ? (v ? 'True' : 'False') : q(v);
 const functions = new Set(['sum','mean','count','min','max','median','std','nunique']);
+export {compileVisualAnalysis,visualCodeSection,normalizeScope,scopeKey,DEFAULT_SCOPE} from './visualAnalysis.mjs';
 export function compilePipeline(source, operations, tables) {
   if (!Object.hasOwn(tables,source)) throw new Error('Unknown source table');
   const code = ['import pandas as pd','import json',`tables = {k: pd.DataFrame(v) for k, v in json.loads(_tables_json).items()}`,`df = tables[${q(source)}].copy()`];
@@ -38,12 +40,16 @@ export function compilePipeline(source, operations, tables) {
       case 'datetime':code.push(`df[${q(p.field)}] = pd.to_datetime(df[${q(p.field)}], errors="coerce")`);break;
       case 'strip':code.push(`df[${q(p.field)}] = df[${q(p.field)}].astype("string").str.strip()`);break;
       case 'rename':code.push(`df = df.rename(columns={${q(p.field)}: ${q(p.name)}})`);break;
-      case 'rolling':code.push(`df = df.sort_values([${q(p.group)}, ${q(p.date)}], kind="stable")`,`df["rolling_mean"] = df.groupby(${q(p.group)})[${q(p.value)}].transform(lambda s: s.rolling(${Number(p.window)||3}, min_periods=1).mean())`);break;
+      case 'rolling':code.push(`df = df.sort_values([${q(p.group)}, ${q(p.date)}], kind="stable")`,`df["rolling_mean"] = df.groupby(${q(p.group)})[${q(p.value)}].transform(lambda s: s.rolling(${Number(p.window)||3}, min_periods=1).mean())`,`df["match_index"] = df.groupby(${q(p.group)}).cumcount()+1`,`df["goals"] = df[${q(p.value)}]`,'df["rolling_goals"] = df["rolling_mean"]');break;
       case 'cut':code.push(`df["minute_band"] = pd.cut(pd.to_numeric(df[${q(p.field)}], errors="coerce"), bins=[0,15,30,45,60,75,90,105,120,150], labels=["01–15","16–30","31–45","46–60","61–75","76–90","91–105","106–120","121+"], include_lowest=True).astype("string")`);break;
       case 'melt':code.push(`df = df.melt(id_vars=[${q(p.group)}], value_vars=${q(p.fields)}, var_name="metric", value_name="value")`);break;
       case 'describe':code.push('df = df.describe(include="all").rename_axis("statistic").reset_index()');break;
       case 'total':code.push('df["total_goals"] = df["et1"].fillna(df["ft1"]) + df["et2"].fillna(df["ft2"])');break;
       case 'custom':code.push(p.code);break;
+      case 'visual_teams':code.push(compileVisualAnalysis(p.scope||{}),'df = teams.copy()');break;
+      case 'visual_form':code.push(compileVisualAnalysis(p.scope||{}),`df = trend.loc[trend["team_id"].eq(${q(p.team||'spain')})].copy()`);break;
+      case 'visual_timing':code.push(compileVisualAnalysis(p.scope||{}),'df = timing.copy()');break;
+      case 'visual_heatmap':code.push(compileVisualAnalysis(p.scope||{}),'df = counts.reset_index()');break;
       default:throw new Error('Unsupported operation: '+type);
     }
   }
@@ -66,7 +72,7 @@ export function recipeOperations(id){
     case 'team-path':return [op('sort',{field:'date',ascending:true})];
     case 'goals-leaders':return [op('filter',{field:'is_own_goal',operator:'eq',value:false}),op('aggregate',{group:'player_name',value:'event_id',func:'count'})];
     case 'goal-time':return [op('cut',{field:'minute_base'}),op('aggregate',{group:'minute_band',value:'event_id',func:'count'})];
-    case 'group-matrix':return [op('filter',{field:'stage',operator:'eq',value:'group'}),op('pivot',{index:'team_id',columns:'group',value:'goals_for_90',func:'sum'})];
+    case 'group-matrix':return [op('visual_heatmap',{scope:{}})];
     case 'team-form':return [op('rolling',{group:'team_id',date:'date',value:'goals_for_90',window:3})];
     case 'match-drill':case 'join-lab':return [op('merge',{table:'goals',left:'match_id',right:'match_id',how:'left',validate:'one_to_many'})];
     case 'quality':return [op('missing')];

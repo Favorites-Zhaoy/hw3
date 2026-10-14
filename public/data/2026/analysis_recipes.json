@@ -28,7 +28,13 @@
         "groupby"
       ],
       "data_guard": "require_columns",
-      "fully_available_offline": true
+      "fully_available_offline": true,
+      "visual_spec": {
+        "chart": "line",
+        "x": "date",
+        "y": "value"
+      },
+      "story_id": null
     },
     {
       "id": "team-path",
@@ -53,7 +59,13 @@
         "groupby"
       ],
       "data_guard": "require_columns",
-      "fully_available_offline": true
+      "fully_available_offline": true,
+      "visual_spec": {
+        "chart": "bar",
+        "x": "date",
+        "y": "goals_for_90"
+      },
+      "story_id": null
     },
     {
       "id": "goals-leaders",
@@ -78,7 +90,13 @@
         "sort_values"
       ],
       "data_guard": "require_columns",
-      "fully_available_offline": true
+      "fully_available_offline": true,
+      "visual_spec": {
+        "chart": "bar",
+        "x": "player_name",
+        "y": "value"
+      },
+      "story_id": null
     },
     {
       "id": "goal-time",
@@ -102,30 +120,43 @@
         "groupby"
       ],
       "data_guard": "require_columns",
-      "fully_available_offline": true
+      "fully_available_offline": true,
+      "visual_spec": {
+        "chart": "bar",
+        "x": "minute_band",
+        "y": "value"
+      },
+      "story_id": "timing"
     },
     {
       "id": "group-matrix",
       "title": {
-        "zh": "小组比赛矩阵",
-        "en": "Group Results Matrix"
+        "zh": "阶段 × 进球时段矩阵",
+        "en": "Stage × goal-time matrix"
       },
-      "base_table": "team_matches",
+      "base_table": "goals",
       "required_fields": [
-        "group",
-        "team_id",
-        "goals_for_90"
+        "match_id",
+        "event_id",
+        "minute_base"
       ],
       "visualization": {
-        "zh": "球队×小组透视矩阵",
-        "en": "Team-group pivot matrix"
+        "zh": "阶段 × 时段的真实进球计数",
+        "en": "Source goal counts by stage and time band"
       },
       "pandas_methods": [
-        "pivot_table",
-        "groupby"
+        "merge",
+        "cut",
+        "pivot_table"
       ],
       "data_guard": "require_columns",
-      "fully_available_offline": true
+      "fully_available_offline": true,
+      "visual_spec": {
+        "chart": "matrix",
+        "x": "stage",
+        "y": "01–15"
+      },
+      "story_id": null
     },
     {
       "id": "team-form",
@@ -149,7 +180,13 @@
         "rolling"
       ],
       "data_guard": "require_columns",
-      "fully_available_offline": true
+      "fully_available_offline": true,
+      "visual_spec": {
+        "chart": "form",
+        "x": "match_index",
+        "y": "rolling_goals"
+      },
+      "story_id": "form"
     },
     {
       "id": "match-drill",
@@ -172,7 +209,13 @@
         "query"
       ],
       "data_guard": "require_columns",
-      "fully_available_offline": true
+      "fully_available_offline": true,
+      "visual_spec": {
+        "chart": "bar",
+        "x": "match_id",
+        "y": "ft1"
+      },
+      "story_id": null
     },
     {
       "id": "join-lab",
@@ -195,7 +238,13 @@
         "validate"
       ],
       "data_guard": "require_columns",
-      "fully_available_offline": true
+      "fully_available_offline": true,
+      "visual_spec": {
+        "chart": "bar",
+        "x": "match_id",
+        "y": "ft1"
+      },
+      "story_id": null
     },
     {
       "id": "quality",
@@ -219,7 +268,13 @@
         "duplicated"
       ],
       "data_guard": "require_columns",
-      "fully_available_offline": true
+      "fully_available_offline": true,
+      "visual_spec": {
+        "chart": "bar",
+        "x": "field",
+        "y": "missing_ratio"
+      },
+      "story_id": null
     },
     {
       "id": "knockout",
@@ -245,7 +300,13 @@
         "groupby"
       ],
       "data_guard": "require_columns",
-      "fully_available_offline": true
+      "fully_available_offline": true,
+      "visual_spec": {
+        "chart": "bar",
+        "x": "match_id",
+        "y": "ft1"
+      },
+      "story_id": null
     },
     {
       "id": "venue",
@@ -269,7 +330,13 @@
         "sort_values"
       ],
       "data_guard": "require_columns",
-      "fully_available_offline": true
+      "fully_available_offline": true,
+      "visual_spec": {
+        "chart": "bar",
+        "x": "venue_name",
+        "y": "value"
+      },
+      "story_id": null
     },
     {
       "id": "code",
@@ -292,7 +359,13 @@
         "sort_values"
       ],
       "data_guard": "require_columns",
-      "fully_available_offline": true
+      "fully_available_offline": true,
+      "visual_spec": {
+        "chart": "bar",
+        "x": "team_id",
+        "y": "value"
+      },
+      "story_id": "attack"
     }
   ]
 }
