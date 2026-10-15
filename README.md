@@ -4,6 +4,12 @@
 
 在线作业：[https://favorites-zhaoy.github.io/hw3/](https://favorites-zhaoy.github.io/hw3/)。
 
+## v4：P0–P2 通用分析工作区
+
+主流程改为图形画布、紧凑工具栏和统一右侧检查器；顶部导入入口在手机上保留文字。支持 CSV/XLSX/JSON、多表命名数据集、可视化筛选与清洗、拖放透视、Join 应用前预览，以及真实 concat/melt/stack/unstack。数据集之间隔离分析状态；结果、完整数据和可运行 Python 均可导出。
+
+实现、浏览器验证、71 项回归测试与容量边界见 [P0_P2_ACCEPTANCE.md](P0_P2_ACCEPTANCE.md)。
+
 ## v3.1 读者导向重构
 
 本轮在现有 React + D3 + pandas 引擎上迭代，新增赛事导读首页、四章问题式阅读层、可展开的代码与分析工具。首页和图注的数字来自同一份真实 pandas 结果；高亮和应用筛选有明确区分。

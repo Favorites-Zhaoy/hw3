@@ -1,6 +1,6 @@
 # 数据审计 / Data audit
 
-Generated: 2026-10-15T07:55:16.047Z
+Generated: 2026-10-15T09:11:02.449Z
 
 来源：公开社区 openfootball/worldcup.json；自动一致性通过不等于全赛事官方认证。
 
