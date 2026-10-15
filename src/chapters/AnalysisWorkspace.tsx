@@ -38,7 +38,7 @@ export default function AnalysisWorkspace({chapter,bundle,lang,dataset,state,set
   if(chapter==='teamsChapter'){const top=c.groups[0];return `${data.inputRows} → ${data.outputRows} ${lang==='zh'?'个分组':'groups'} · ${top?name(top.team_id)+' / '+t('sum')+' '+(top.total==null?'—':Number(top.total).toFixed(2)):t('noRows')}`;}
   return `${source} ⋈ ${cfg.right}: ${data.outputRows} ${t('rows')} · ${c.flow.map((r:Row)=>t(r.key)+' '+r.value).join(' / ')}`;
  }
- 
+
  const recipeIds:Record<string,string[]>={quality:['quality'],explore:['overview','knockout'],teamsChapter:['team-path','goals-leaders','group-matrix','team-form','venue'],relations:['goal-time','match-drill','join-lab','code']};
  return <div className="chapter-workspace" onKeyDown={e=>{if(e.key==='Escape'){setSelection([]);setDraft({});}}}>
  <header className="chapter-heading"><div className="chapter-heading-number">{chapterNo[chapter]}</div><div><span className="eyebrow">VISUAL PANDAS / {t(!world&&chapter!=='quality'?'generic.'+chapter:chapter)}</span><h1>{t(!world&&['explore','relations'].includes(chapter)?'generic.'+chapter+'.question':chapter+'.question')}</h1><p>{t(chapter+'.subtitle')}</p></div>{chapter==='quality'&&world&&<div className="chapter-brand-ball"><Suspense fallback={<span>⚽</span>}><Football/></Suspense><button className="football-replay" onClick={()=>setReplay(true)} aria-label={t('replay')}>⚽<small>{t('replay')}</small></button></div>}</header>
