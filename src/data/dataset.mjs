@@ -1,5 +1,5 @@
 // Import is a local, reversible preview. Business statistics are computed in pandas.
-export function parseCSV(text, delimiter='', nullTokens=['','NA','null']) {
+export function parseCSV(text, delimiter='', nullTokens=['','NA','null'],header=true) {
   text=text.replace(/^\uFEFF/,'');
   if(!text.trim())throw new Error('EMPTY_FILE');
   if(!delimiter){const line=text.split(/\r?\n/)[0];delimiter=[',',';','\t','|'].sort((a,b)=>line.split(b).length-line.split(a).length)[0];}
@@ -7,7 +7,7 @@ export function parseCSV(text, delimiter='', nullTokens=['','NA','null']) {
   const records=[];let row=[],cell='',quoted=false;
   for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){cell+='"';i++;}else if(quoted||cell==='')quoted=!quoted;else throw new Error('CSV_QUOTES');}else if(c===delimiter&&!quoted){row.push(cell);cell='';}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell);if(row.some(v=>v!==''))records.push(row);row=[];cell='';}else cell+=c;}
   if(quoted)throw new Error('CSV_QUOTES');row.push(cell);if(row.some(v=>v!==''))records.push(row);
-  const columns=(records.shift()||[]).map(s=>s.trim());
+  const columns=header?(records.shift()||[]).map(s=>s.trim()):Array.from({length:records[0]?.length||0},(_,i)=>'column_'+(i+1));
   if(!columns.length||columns.some(s=>!s)||new Set(columns).size!==columns.length)throw new Error('COLUMN_NAMES');
   if(columns.some(s=>s.startsWith('__wcl_')))throw new Error('RESERVED_COLUMN');
   if(records.some(r=>r.length!==columns.length))throw new Error('CSV_WIDTH');
@@ -22,9 +22,19 @@ export function defaultConfig(chapter,source,tables,types={}){
   const fields=inspectFields(tables[source]||[],types),keys=fields.map(f=>f.key),nums=fields.filter(f=>f.type==='number').map(f=>f.key),dims=fields.filter(f=>f.type==='text'||f.type==='boolean').map(f=>f.key),date=fields.find(f=>f.type==='date')?.key||'';
   const world=source==='matches'&&keys.includes('ft1')&&keys.includes('ft2');
   const team=source==='team_matches'&&keys.includes('team_id');
-  const candidates=Object.keys(tables).filter(k=>k!==source);const suitable=candidates.find(k=>k==='matches'&&keys.some(f=>Object.keys(tables[k]?.[0]||{}).includes(f)))||candidates.find(k=>keys.some(f=>Object.keys(tables[k]?.[0]||{}).includes(f)));const right=suitable||candidates[0]||'';
+  const football=['matches','team_matches','goals','teams','venues'];const candidates=Object.keys(tables).filter(k=>k!==source&&(football.includes(source)||!football.includes(k)));const suitable=candidates.find(k=>k==='matches'&&keys.some(f=>Object.keys(tables[k]?.[0]||{}).includes(f)))||candidates.find(k=>keys.some(f=>Object.keys(tables[k]?.[0]||{}).includes(f)));const right=suitable||candidates[0]||'';
   const common=keys.find(k=>k!=='__wcl_id'&&Object.keys(tables[right]?.[0]||{}).includes(k))||keys[0]||'';
   return {source,types,registry:{},worldcupContext:['matches','team_matches','goals','teams','venues'].includes(source),field:keys.includes('attendance')?'attendance':keys[0]||'',clean:[],duplicateKeys:[],keep:'first',pixelPage:0,x:world?'total_goals':nums[0]||dims[0]||'',y:world?'goal_margin':nums[1]||nums[0]||'',color:keys.includes('stage')?'stage':dims[0]||'',date,bins:5,conditions:[],logic:'and',selectedIds:[],sort:world?'total_goals':nums[0]||keys[0]||'',ascending:false,top:10,final:true,row:team?'team_id':dims[0]||keys[0]||'',column:keys.includes('stage')?'stage':dims[1]||'',value:team?'goals_for_final':nums[0]||keys[0]||'',func:nums.length?'mean':'count',window:3,focus:'',frequency:'W',right,leftKey:common,rightKey:common,how:'left',validate:'many_to_one',relationMode:suitable?'merge':'melt',matchId:'',valueVars:world?['ft1','ft2']:nums.slice(0,3),idVars:keys.includes('match_id')?['match_id']:keys.slice(0,1),axis:0,join:'outer'};
 }
 export function actionToOperation(type,params,source){return {id:crypto.randomUUID(),type,params,source,created_at:new Date().toISOString()};}
 export function safeJSONRows(input){const rows=Array.isArray(input)?input:input?.rows;if(!Array.isArray(rows)||rows.some(r=>!r||typeof r!=='object'||Array.isArray(r)))throw new Error('JSON_ROWS');if(rows.some(r=>Object.keys(r).some(k=>k.startsWith('__wcl_'))))throw new Error('RESERVED_COLUMN');return rows;}
+
+export function sheetRows(matrix,header=true){
+  const data=matrix.filter(row=>row.some(value=>value!=null));
+  if(!data.length)throw new Error('EMPTY_FILE');
+  const width=Math.max(...data.map(row=>row.length));
+  const columns=header?data[0].map(value=>String(value??'').trim()):Array.from({length:width},(_,i)=>'column_'+(i+1));
+  if(columns.length!==width||columns.some(k=>!k)||new Set(columns).size!==columns.length)throw new Error('COLUMN_NAMES');
+  if(columns.some(k=>k.startsWith('__wcl_')))throw new Error('RESERVED_COLUMN');
+  return data.slice(header?1:0).map(row=>Object.fromEntries(columns.map((key,i)=>[key,row[i] instanceof Date?row[i].toISOString():row[i]??null])));
+}

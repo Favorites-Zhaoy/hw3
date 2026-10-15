@@ -10,13 +10,16 @@
     "test": "node --test tests/*.test.mjs",
     "data:full": "node scripts/build-worldcup.mjs",
     "data:visuals": "node scripts/precompute-visuals.mjs",
-    "data:chapters": "node scripts/precompute-chapters.mjs"
+    "data:chapters": "node scripts/precompute-chapters.mjs",
+    "data:audit": "node scripts/audit-data.mjs",
+    "prebuild": "npm run data:audit"
   },
   "dependencies": {
     "d3": "7.9.0",
     "lucide-react": "0.468.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "read-excel-file": "6.0.1",
     "three": "0.172.0"
   },
   "devDependencies": {
@@ -25,6 +28,7 @@
     "@types/react-dom": "19.0.2",
     "@types/three": "0.172.0",
     "@vitejs/plugin-react": "4.3.4",
+    "fflate": "0.8.3",
     "typescript": "5.7.3",
     "vite": "6.4.4"
   }

@@ -4,6 +4,22 @@
 
 在线作业：[https://favorites-zhaoy.github.io/hw3/](https://favorites-zhaoy.github.io/hw3/)。
 
+## v3.1 读者导向重构
+
+本轮在现有 React + D3 + pandas 引擎上迭代，新增赛事导读首页、四章问题式阅读层、可展开的代码与分析工具。首页和图注的数字来自同一份真实 pandas 结果；高亮和应用筛选有明确区分。
+
+- 自动审计见 [DATA_AUDIT.md](DATA_AUDIT.md) 与 [data_audit.json](data_audit.json)，构建前和浏览器加载时均校验。
+- CSV 支持 UTF-8 / GB18030 / Windows-1252、分隔符与表头设置；XLSX 可选工作表或一次导入为多张表。普通 JSON 与项目快照分别处理。
+- 提供本地合成示例 [orders.xlsx](public/examples/orders.xlsx)。导入数据不会发往服务器；首次计算需下载 Pyodide / pandas。
+- 详细实现、验证和未完成的人工验收见 [READER_REBUILD.md](READER_REBUILD.md)。
+
+```powershell
+npm run data:audit
+npm run data:chapters
+npm test
+npm run build
+```
+
 ## 本地运行
 
 需要 Node.js 18+（推荐 22）。在本目录打开终端：

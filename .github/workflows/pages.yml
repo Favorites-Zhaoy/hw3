@@ -25,6 +25,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install pandas==2.3.2
+      - run: npm run data:audit
       - run: npm run data:visuals
       - run: npm run data:chapters
       - run: npm run build

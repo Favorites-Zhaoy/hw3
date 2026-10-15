@@ -1,0 +1,6 @@
+[
+  {"match":"Mexico – South Africa, 2026-06-11","checked":"2–0, half-time 1–0","url":"https://fdp.fifa.org/assetspublic/ce281/r12452/pdf/FullTimeMatchReport-English.pdf","note":"FIFA official full-time report; advanced statistics are not imported."},
+  {"match":"Qatar – Switzerland, 2026-06-13","checked":"1–1, Embolo 17′; Muheim own goal 90+4′ credited to Qatar","url":"https://fdp.fifa.org/assetspublic/ce281/r12456/pdf/FullTimeMatchReport-English.pdf","note":"FIFA updated report v2, pages 1–3. The report includes a correction to the goal attribution."},
+  {"match":"Germany – Paraguay, 2026-06-29","checked":"1–1 after 120 minutes; shootout 3–4","url":"https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/germany-paraguay-review-highlights","note":"FIFA search-indexed match report; HTML body unavailable to the reader tool. Individual minutes not independently verified here."},
+  {"match":"Belgium – Senegal, 2026-07-01","checked":"3–2 after extra time; Belgium recovered from 0–2","url":"https://www.fifa.com/en/articles/bosnia-england-belgium-usa-review-highlights","note":"FIFA search-indexed review, cross-checked against AP report https://apnews.com/article/461f08dc7297b99741a449cdcbd89ac6 . AP confirms the winning penalty in minute 125; source records 120+5. Other exact goal minutes not independently verified here."}
+]

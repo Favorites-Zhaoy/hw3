@@ -1,4 +1,4 @@
-export const ENGINE_VERSION='3.0.0';
+export const ENGINE_VERSION='3.1.0';
 export function compileChapter(chapter,config){
   if(!['quality','explore','teamsChapter','relations'].includes(chapter))throw new Error('Unknown chapter');
   return `import pandas as pd
@@ -94,6 +94,11 @@ for op in cfg.get('clean',[]):
 prepared=df.copy(deep=True)
 
 if cfg['chapter']=='quality':
+    if source=='matches' and all(k in df for k in ['ft1','ft2','stage']):
+        if cfg.get('matchIds'): step('df = df.loc[df["match_id"].isin('+lit(cfg['matchIds'])+')].copy()')
+        if cfg.get('teamIds'): step('df = df.loc[df["team1_id"].isin('+lit(cfg['teamIds'])+') | df["team2_id"].isin('+lit(cfg['teamIds'])+')].copy()')
+        if cfg.get('stage'): step('df = df.loc[df["stage"].eq('+lit(cfg['stage'])+')].copy()')
+        if cfg.get('overviewDay'): step('df = df.loc[df["date"].eq('+lit(cfg['overviewDay'])+')].copy()')
     if cfg.get('selectedIds'): step('df = df.loc[df["__wcl_id"].isin('+lit(cfg['selectedIds'])+')].copy()')
     prof,info=profile(df); before_prof,_=profile(original)
     prof=sorted(prof,key=lambda f:(f['field']!=cfg.get('field'),-f['missing'],f['field']))
@@ -147,6 +152,18 @@ if cfg['chapter']=='quality':
         else: labels=df[field].astype('string')
         membership=[{'id':df.loc[i,'__wcl_id'],'key':str(k)} for i,k in labels.dropna().items()]
     charts={'profile':prof,'beforeProfile':before_prof,'info':info,'pixels':pixels,'pageStart':start,'distribution':distribution(df[field]) if field else [],'membership':membership,'describe':records(summary),'duplicates':records(dupgroups),'duplicateRows':int(duplicate.sum()),'removeDuplicates':int(removing.sum()),'dropPreview':int(df[field].isna().sum()) if field else 0,'changes':changes,'changedCells':changed_cells,'removedRows':len(original)-len(df),'cleanPreview':preview,'tableSizes':[{'key':k,'label':k,'value':len(v),'columns':len(v.columns),'nonNull':int(v.notna().sum().sum())} for k,v in tables.items()]}
+    if source=='matches' and all(k in df for k in ['ft1','ft2','match_id']):
+        overview=df.assign(total_goals=df.et1.combine_first(df.ft1)+df.et2.combine_first(df.ft2))
+        overview['goal_margin']=(overview.et1.combine_first(overview.ft1)-overview.et2.combine_first(overview.ft2)).abs()
+        daily=overview.groupby('date').agg(matches=('match_id','size'),goals=('total_goals','sum')).reset_index()
+        if len(daily): daily=daily.set_index('date').reindex(pd.date_range(overview.date.min(),overview.date.max()).strftime('%Y-%m-%d'),fill_value=0).rename_axis('date').reset_index()
+        stage_counts=overview.groupby('stage').size().reset_index(name='value')
+        margins=overview.groupby('goal_margin').size().reset_index(name='value')
+        event_pool=tables.get('goals',pd.DataFrame())
+        events=event_pool.loc[event_pool.match_id.isin(overview.match_id)].copy() if 'match_id' in event_pool else pd.DataFrame()
+        focus=overview.sort_values(['total_goals','date'],ascending=[False,True],kind='stable').head(8)
+        charts['tournament']={'matchCount':len(overview),'teamCount':int(pd.concat([overview.team1_id,overview.team2_id]).nunique()),'goalCount':len(events),'scoreGoals':int(overview.total_goals.sum()),'daily':records(daily),'stages':records(stage_counts),'margins':records(margins),'matches':records(overview),'focus':records(focus),'events':records(events),'missingCells':int(public(df).isna().sum().sum()),'columns':len(public(df).columns)}
+        steps.append({'code':"overview = df.assign(total_goals=df.et1.combine_first(df.ft1) + df.et2.combine_first(df.ft2))\\ndaily = overview.groupby('date').agg(matches=('match_id','size'), goals=('total_goals','sum'))",'before':list(df.shape),'after':list(daily.shape)})
     steps.append({'code':"df.info()\\ndf.describe(include='all')\\ndf.isna().sum()\\ndf.duplicated(subset="+lit(keys)+", keep="+lit(cfg.get('keep','first'))+")",'before':list(df.shape),'after':list(df.shape)})
 
 elif cfg['chapter']=='explore':
@@ -156,6 +173,13 @@ elif cfg['chapter']=='explore':
         b="df['et2'].combine_first(df['ft2'])" if cfg.get('final',True) else "df['ft2']"
         step('df = df.assign(total_goals='+a+' + '+b+', goal_margin=('+a+' - '+b+').abs())')
         df['__wcl_extra']=df['et1'].notna()
+        df['__wcl_shootout']=df['penalties1'].notna()
+        goal_pool=tables.get('goals',pd.DataFrame())
+        late=goal_pool.loc[(goal_pool.minute_base.gt(cfg.get('lateMinute',75))) | (goal_pool.minute_base.eq(cfg.get('lateMinute',75)) & goal_pool.minute_added.gt(0))] if 'minute_base' in goal_pool else pd.DataFrame()
+        if not cfg.get('final',True) and len(late): late=late.loc[late.minute_base.le(90)]
+        df['__wcl_late']=df.match_id.isin(late.match_id if 'match_id' in late else [])
+        for tag in cfg.get('tags',[]):
+            if tag in ['__wcl_extra','__wcl_shootout','__wcl_late']: step('df = df.loc[df['+lit(tag)+']].copy()')
     x,y=cfg.get('x'),cfg.get('y')
     masks=[]
     for condition in cfg.get('conditions',[]):
@@ -192,6 +216,16 @@ elif cfg['chapter']=='explore':
     if date in df:
         parsed=pd.to_datetime(df[date],errors='coerce',format='mixed',utc=True);dates=[{'key':str(k),'label':str(k),'value':int(v)} for k,v in parsed.dt.strftime('%Y-%m-%d').value_counts().sort_index().items()]
     charts={'world':world,'points':records(df),'xDistribution':distribution(df[x],bins) if x in df else [],'yDistribution':distribution(df[y],bins) if y in df else [],'equal':equal,'quantile':quantile,'actualBins':len(edges),'requestedBins':bins,'edges':edges,'types':types,'dates':dates,'ranking':records(df.head(int(cfg.get('top',10)))),'numeric':list(df.select_dtypes(include='number').columns)}
+    if world:
+        score1=df.et1.combine_first(df.ft1) if cfg.get('final',True) else df.ft1
+        score2=df.et2.combine_first(df.ft2) if cfg.get('final',True) else df.ft2
+        grid=df.assign(home_score=score1,away_score=score2).groupby(['home_score','away_score']).agg(count=('match_id','size'),ids=('__wcl_id',list)).reset_index()
+        charts['scoreGrid']=records(grid)
+        timing=goal_pool.loc[goal_pool.match_id.isin(df.match_id)].copy() if 'match_id' in goal_pool else pd.DataFrame()
+        if len(timing) and not cfg.get('final',True): timing=timing.loc[timing.minute_base.le(90)]
+        charts['goalTiming']=records(timing)
+        charts['goalMinutes']=records(timing.groupby('minute_base').agg(value=('event_id','size'),matchIds=('match_id',list)).reset_index()) if len(timing) else []
+        charts['summary']={'matches':len(df),'extra':int(df.__wcl_extra.sum()),'shootout':int(df.__wcl_shootout.sum()),'late':int(df.__wcl_late.sum()),'goals':int(df.total_goals.sum())}
 
 elif cfg['chapter']=='teamsChapter':
     world=all(k in df for k in ['team_id','goals_for_90','goals_against_90'])
@@ -244,7 +278,7 @@ elif cfg['chapter']=='teamsChapter':
         resampled=timed[[value]].resample(freq).sum(min_count=1).reset_index();resampled[date]=resampled[date].dt.strftime('%Y-%m-%d')
         steps.append({'code':'df.set_index('+lit(date)+')[['+lit(value)+']].resample('+lit(freq)+').sum(min_count=1)','before':list(df.shape),'after':list(resampled.shape)})
     if col in df and col!=row: cross=pd.crosstab(df[row],df[col]).reset_index()
-    charts={'world':football_metric,'countOnly':nonnumeric,'groups':records(summary),'rankShift':records(summary.loc[((summary.rank_total.le(8)) | (summary.rank_average.le(8))) & summary.average.notna()]),'pivot':{'rows':[str(k) for k in pivot.index][:50],'cols':[str(k) for k in pivot.columns][:30],'values':json.loads(pivot.iloc[:50,:30].to_json(orient='values')),'totalRows':len(pivot.index),'totalColumns':len(pivot.columns)},'trend':records(trend),'focus':focus,'resampled':records(resampled),'cross':records(cross),'basis':records(basis),'distribution':distribution(df[value]),'measure':value}
+    charts={'world':football_metric,'countOnly':nonnumeric,'groups':records(summary),'rankShift':records(summary.loc[((summary.rank_total.le(8)) | (summary.rank_average.le(8))) & summary.average.notna()]),'pivot':{'rows':[str(k) for k in pivot.index][:50],'cols':[str(k) for k in pivot.columns][:30],'values':json.loads(pivot.iloc[:50,:30].to_json(orient='values')),'totalRows':len(pivot.index),'totalColumns':len(pivot.columns)},'trend':records(trend),'focus':focus,'resampled':records(resampled),'cross':records(cross),'basis':records(basis),'distribution':distribution(df[value]),'measure':value,'reference':{'x':None if pd.isna(summary.average_goals.mean()) else float(summary.average_goals.mean()),'y':None if pd.isna(summary.average_conceded.mean()) else float(summary.average_conceded.mean())}}
     df=summary.copy()
 
 else:
@@ -313,7 +347,7 @@ else:
             all_events['minute_band']=pd.cut(all_events.minute_base,bins=[0,15,30,45,60,75,90,105,120,150],labels=bands,include_lowest=True).astype('string')
             all_events['dot_index']=all_events.groupby(['stage','minute_band'],dropna=False).cumcount()
             if not cfg.get('final',True): events=events.loc[events.minute_base.le(90)]
-            events=events.sort_values(['minute_base','minute_added','event_id'],kind='stable')
+            events=events.sort_values(['minute_base','minute_added'],kind='stable')
             home=away=0;progress=[{'minute':0,'home':0,'away':0,'label':'0'}]
             for _,e in events.iterrows():
                 home+=int(e.scoring_team_id==match['team1_id']);away+=int(e.scoring_team_id==match['team2_id']);progress.append({'minute':int(e.minute_base),'home':home,'away':away,'label':str(e.minute_label),'event_id':e.event_id})

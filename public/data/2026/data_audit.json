@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "passed": true,
+  "counts": {
+    "matches": 26,
+    "team_matches": 52,
+    "goals": 78,
+    "teams": 18,
+    "venues": 15
+  },
+  "missing": {
+    "matches": {
+      "match_id": 0,
+      "match_no": 18,
+      "date": 0,
+      "local_time": 0,
+      "kickoff_utc": 0,
+      "round": 0,
+      "stage": 0,
+      "group": 8,
+      "team1_id": 0,
+      "team2_id": 0,
+      "team1_name": 0,
+      "team2_name": 0,
+      "venue_id": 0,
+      "venue_name": 0,
+      "status": 0,
+      "ht1": 0,
+      "ht2": 0,
+      "ft1": 0,
+      "ft2": 0,
+      "et1": 23,
+      "et2": 23,
+      "penalties1": 26,
+      "penalties2": 26,
+      "winner_id": 4,
+      "attendance": 26,
+      "data_level": 0,
+      "source": 0
+    },
+    "team_matches": {
+      "match_id": 0,
+      "team_id": 0,
+      "opponent_id": 0,
+      "side": 0,
+      "date": 0,
+      "stage": 0,
+      "group": 16,
+      "goals_for_90": 0,
+      "goals_against_90": 0,
+      "goals_for_final": 0,
+      "goals_against_final": 0,
+      "win": 0,
+      "draw_90": 0,
+      "result_90": 0,
+      "goal_difference_90": 0,
+      "shots": 52,
+      "shots_on_target": 52,
+      "possession_pct": 52,
+      "xg": 52
+    },
+    "goals": {
+      "event_id": 0,
+      "match_id": 0,
+      "event_type": 0,
+      "scoring_team_id": 0,
+      "player_name": 0,
+      "player_team_id": 0,
+      "minute_label": 0,
+      "minute_base": 0,
+      "minute_added": 0,
+      "phase": 0,
+      "is_penalty": 0,
+      "is_own_goal": 0,
+      "x": 78,
+      "y": 78,
+      "xg": 78,
+      "data_level": 0
+    },
+    "teams": {
+      "team_id": 0,
+      "name_en": 0,
+      "name_zh": 0,
+      "group": 6,
+      "label_status": 0
+    },
+    "venues": {
+      "venue_id": 0,
+      "name_en": 0,
+      "name_zh": 15,
+      "country": 15,
+      "latitude": 15,
+      "longitude": 15,
+      "geo_verified": 0
+    }
+  },
+  "primary_keys": {
+    "matches": "match_id",
+    "teams": "team_id",
+    "venues": "venue_id",
+    "goals": "event_id",
+    "team_matches": [
+      "match_id",
+      "team_id"
+    ]
+  },
+  "errors": [],
+  "source_type": "public_community",
+  "independently_verified_full_tournament": false,
+  "source_sha256": "a94de2c9f6d0995214c774115d501f0adcf81f96ed2a1530c47a0f736744b031",
+  "checked_at": "2026-10-15T07:55:16.033Z",
+  "external_checks": [
+    {
+      "match": "Mexico – South Africa, 2026-06-11",
+      "checked": "2–0, half-time 1–0",
+      "url": "https://fdp.fifa.org/assetspublic/ce281/r12452/pdf/FullTimeMatchReport-English.pdf",
+      "note": "FIFA official full-time report; advanced statistics are not imported."
+    },
+    {
+      "match": "Qatar – Switzerland, 2026-06-13",
+      "checked": "1–1, Embolo 17′; Muheim own goal 90+4′ credited to Qatar",
+      "url": "https://fdp.fifa.org/assetspublic/ce281/r12456/pdf/FullTimeMatchReport-English.pdf",
+      "note": "FIFA updated report v2, pages 1–3. The report includes a correction to the goal attribution."
+    },
+    {
+      "match": "Germany – Paraguay, 2026-06-29",
+      "checked": "1–1 after 120 minutes; shootout 3–4",
+      "url": "https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/germany-paraguay-review-highlights",
+      "note": "FIFA search-indexed match report; HTML body unavailable to the reader tool. Individual minutes not independently verified here."
+    },
+    {
+      "match": "Belgium – Senegal, 2026-07-01",
+      "checked": "3–2 after extra time; Belgium recovered from 0–2",
+      "url": "https://www.fifa.com/en/articles/bosnia-england-belgium-usa-review-highlights",
+      "note": "FIFA search-indexed review, cross-checked against AP report https://apnews.com/article/461f08dc7297b99741a449cdcbd89ac6 . AP confirms the winning penalty in minute 125; source records 120+5. Other exact goal minutes not independently verified here."
+    }
+  ],
+  "allow_complete_claim": false
+}
