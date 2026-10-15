@@ -7,3 +7,6 @@
 .reader-python{font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:340px;overflow:auto;background:var(--soft);padding:15px;line-height:1.7}.reader-scope-details{display:flex;flex-wrap:wrap;gap:7px;font-size:11px}.reader-scope-details span{border:1px solid var(--line);padding:5px 8px;border-radius:4px;background:var(--panel)}
 
 .sidebar{overflow-y:auto}.sidebar-card{flex-shrink:0}
+
+/* A fresh kickoff after the dataset has loaded, on every page load. */
+.football-scene.kickoff-opening{position:fixed;inset:0!important;width:100%;height:100dvh;z-index:1000;background:radial-gradient(ellipse at 50% 55%,#3c6556f5 0%,#153b32fa 50%,#071c18 100%);opacity:1;transition:opacity .3s ease;isolation:isolate;touch-action:none}.football-scene.kickoff-opening.is-leaving{opacity:0;pointer-events:none}.kickoff-opening canvas{position:absolute;inset:0}.kickoff-opening .skip-intro{right:max(24px,env(safe-area-inset-right));bottom:max(24px,env(safe-area-inset-bottom));font-size:12px;letter-spacing:1px;min-height:42px;color:#edf2df;border-color:#91af99;background:#153b3270}.kickoff-opening .skip-intro:focus-visible{outline:2px solid #e6c581;outline-offset:4px}.kickoff-opening .fallback-ball{position:absolute;inset:0;display:grid;place-items:center;font-size:clamp(90px,20vw,210px)}

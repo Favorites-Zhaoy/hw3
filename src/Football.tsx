@@ -1,20 +1,24 @@
 import {useEffect,useRef,useState} from 'react';
 import * as THREE from 'three';
-export default function Football({replay=0}:{replay?:number}){
+export default function Football({replay=0,opening=false,lang='zh',onComplete}:{replay?:number;opening?:boolean;lang?:'zh'|'en';onComplete?:()=>void}){
   const host=useRef<HTMLDivElement>(null);const initialIntro=useRef(sessionStorage.getItem('wcl-kickoff-v2')!=='seen');const [fallback,setFallback]=useState(false);const [intro,setIntro]=useState(initialIntro.current);
+  const [leaving,setLeaving]=useState(false),complete=useRef(onComplete),skip=useRef<HTMLButtonElement>(null);complete.current=onComplete;
+  useEffect(()=>{if(!opening)return;const overflow=document.body.style.overflow,focused=document.activeElement as HTMLElement;document.body.style.overflow='hidden';skip.current?.focus();const escape=(e:KeyboardEvent)=>{if(e.key==='Escape')complete.current?.();if(e.key==='Tab'){e.preventDefault();skip.current?.focus();}};document.addEventListener('keydown',escape);return()=>{document.body.style.overflow=overflow;document.removeEventListener('keydown',escape);focused?.focus();};},[opening]);
   useEffect(()=>{
-    if(!host.current)return;const fly=(replay>0||initialIntro.current)&&!matchMedia('(prefers-reduced-motion: reduce)').matches;setIntro(fly);sessionStorage.setItem('wcl-kickoff-v2','seen');
+    if(!host.current)return;const fly=(opening||replay>0||initialIntro.current)&&!matchMedia('(prefers-reduced-motion: reduce)').matches;setIntro(fly);setLeaving(false);if(!opening)sessionStorage.setItem('wcl-kickoff-v2','seen');
     const el=host.current;let renderer:THREE.WebGLRenderer;
-    try{renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});}catch{setFallback(true);return;}
+    try{renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});}catch{setFallback(true);if(opening){const timer=setTimeout(()=>complete.current?.(),500);return()=>clearTimeout(timer);}return;}
     renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x000000,0);el.appendChild(renderer.domElement);
     const scene=new THREE.Scene();const camera=new THREE.PerspectiveCamera(36,1,.1,100);camera.position.set(0,1.5,8);camera.lookAt(0,0,0);
+    if(opening){camera.position.set(0,0,8);camera.lookAt(0,0,0);}
     scene.add(new THREE.HemisphereLight(0xfff8e7,0x153f33,3));
     const key=new THREE.DirectionalLight(0xffebc2,5);key.position.set(-3,5,5);scene.add(key);
     const rim=new THREE.DirectionalLight(0xb9eac6,4);rim.position.set(4,2,-3);scene.add(rim);
     const ball=new THREE.Group();scene.add(ball);
     ball.add(new THREE.Mesh(new THREE.SphereGeometry(1,64,48),new THREE.MeshStandardMaterial({color:0xeeeade,roughness:.58,metalness:.03})));
-    const ico=new THREE.IcosahedronGeometry(1,0).getAttribute('position');const directions:THREE.Vector3[]=[];
+    const icoGeometry=new THREE.IcosahedronGeometry(1,0),ico=icoGeometry.getAttribute('position');const directions:THREE.Vector3[]=[];
     for(let i=0;i<ico.count;i++){const v=new THREE.Vector3().fromBufferAttribute(ico,i).normalize();if(!directions.some(d=>d.distanceTo(v)<.001))directions.push(v);}
+    icoGeometry.dispose();
     // Twelve curved pentagons, following the vertex directions of an icosahedron.
     directions.forEach(n=>{
       const u=new THREE.Vector3(0,1,0);if(Math.abs(n.y)>.9)u.set(1,0,0);
@@ -37,14 +41,16 @@ export default function Football({replay=0}:{replay?:number}){
     const grid=new THREE.GridHelper(16,24,0x7b9d72,0x486b56);grid.rotation.x=Math.PI/2;field.add(grid);
     const circle=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({length:100},(_,i)=>new THREE.Vector3(Math.cos(i/100*Math.PI*2)*2.2,Math.sin(i/100*Math.PI*2)*2.2,.01))),new THREE.LineBasicMaterial({color:0xc2c39b,transparent:true,opacity:.4}));field.add(circle);
     const halo=new THREE.Mesh(new THREE.RingGeometry(1.7,1.72,100),new THREE.MeshBasicMaterial({color:0xe2b66a,transparent:true,opacity:.5,side:THREE.DoubleSide}));halo.position.z=-1.2;scene.add(halo);
+    if(opening){halo.visible=false;field.visible=false;}
     let w=el.clientWidth,h=el.clientHeight;const resize=()=>{w=el.clientWidth;h=el.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();};resize();const ro=new ResizeObserver(resize);ro.observe(el);
-    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;const introTimer=setTimeout(()=>setIntro(false),1200);const start=performance.now();let raf=0;let mx=0,my=0;
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;const duration=reduced?650:1850;const introTimer=setTimeout(()=>{if(opening)complete.current?.();else setIntro(false);},opening?duration:1200);const fadeTimer=opening?setTimeout(()=>setLeaving(true),duration-300):undefined;const start=performance.now();let raf=0;let mx=0,my=0;
     const move=(e:PointerEvent)=>{const r=el.getBoundingClientRect();mx=(e.clientX-r.left)/r.width-.5;my=(e.clientY-r.top)/r.height-.5;};el.addEventListener('pointermove',move);
     const animate=()=>{const t=(performance.now()-start)/1000;
-      if(fly&&t<1.15){const p=Math.min(t/1.15,1);ball.position.z=p<.64 ? -14+19*Math.pow(p/.64,2.3) : 5*(1-(p-.64)/.36);ball.position.y=.4*Math.sin(p*Math.PI);ball.rotation.set(p*3,p*6,p*.7);}else{ball.position.z=0;ball.position.y=reduced?0:Math.sin(t*.75)*.12;ball.rotation.y=reduced?.3:t*.17+mx*.3;ball.rotation.x=my*.25;}
+      if(opening){const p=Math.min(t/1.7,1);if(reduced){ball.position.set(0,0,0);ball.rotation.set(.2,.4,0);}else{ball.position.set(-1.6*(1-p),-.7*(1-p)+.65*Math.sin(p*Math.PI),-18+25*Math.pow(p,2.25));ball.rotation.set(-p*4,p*8,-p*.9);}}
+      else if(fly&&t<1.15){const p=Math.min(t/1.15,1);ball.position.z=p<.64 ? -14+19*Math.pow(p/.64,2.3) : 5*(1-(p-.64)/.36);ball.position.y=.4*Math.sin(p*Math.PI);ball.rotation.set(p*3,p*6,p*.7);}else{ball.position.z=0;ball.position.y=reduced?0:Math.sin(t*.75)*.12;ball.rotation.y=reduced?.3:t*.17+mx*.3;ball.rotation.x=my*.25;}
       renderer.render(scene,camera);if(!reduced||t<.1)raf=requestAnimationFrame(animate);
     };animate();
-    return()=>{clearTimeout(introTimer);cancelAnimationFrame(raf);ro.disconnect();el.removeEventListener('pointermove',move);scene.traverse(o=>{if(o instanceof THREE.Mesh||o instanceof THREE.Line){o.geometry.dispose();const m=o.material;(Array.isArray(m)?m:[m]).forEach(x=>x.dispose());}});renderer.dispose();renderer.domElement.remove();};
-  },[replay]);
-  return <div className={'football-scene '+(intro&&!fallback?'in-flight':'')} ref={host} aria-label="3D football">{fallback&&<div className="fallback-ball">⚽</div>}{intro&&!fallback&&<><div className="kickoff-title">WORLD CUP DATA LAB<span>KICK OFF / 2026</span></div><button className="skip-intro" onClick={()=>setIntro(false)}>SKIP →</button></>}</div>;
+    return()=>{clearTimeout(introTimer);clearTimeout(fadeTimer);cancelAnimationFrame(raf);ro.disconnect();el.removeEventListener('pointermove',move);scene.traverse(o=>{if(o instanceof THREE.Mesh||o instanceof THREE.Line){o.geometry.dispose();const m=o.material;(Array.isArray(m)?m:[m]).forEach(x=>x.dispose());}});renderer.dispose();renderer.domElement.remove();};
+  },[replay,opening]);
+  return <div className={'football-scene '+(opening?'kickoff-opening'+(leaving?' is-leaving':''):intro&&!fallback?'in-flight':'')} ref={host} role={opening?'dialog':undefined} aria-modal={opening?true:undefined} aria-label={opening?(lang==='zh'?'开场动画：3D 足球飞向镜头':'Opening animation: a 3D football flies toward you'):'3D football'}>{fallback&&<div className="fallback-ball">⚽</div>}{opening?<button ref={skip} className="skip-intro" onClick={()=>complete.current?.()}>{lang==='zh'?'跳过动画':'Skip animation'} →</button>:intro&&!fallback&&<><div className="kickoff-title">WORLD CUP DATA LAB<span>KICK OFF / 2026</span></div><button className="skip-intro" onClick={()=>setIntro(false)}>SKIP →</button></>}</div>;
 }
