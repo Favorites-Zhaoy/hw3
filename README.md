@@ -1,6 +1,6 @@
 # World Cup Data Lab · 世界杯数据实验室
 
-可视化导论 HW3。以“总量与场均排名”“进球时间模式”“球队攻守关联”为主要问题，用 D3 交互图表探索世界杯。真实 pandas 是核心图表的计算依据；纯静态部署，无业务后端。
+可视化导论 HW3。四章“认识数据 → 发现比赛 / 记录 → 解读球队 / 分组 → 还原比赛 / 关联重塑”，把数据问题、图形交互与真实 pandas 计算放在同一工作区。世界杯为默认案例，同时支持 CSV / TSV / JSON 自由数据；纯静态部署，无业务后端。
 
 在线作业：[https://favorites-zhaoy.github.io/hw3/](https://favorites-zhaoy.github.io/hw3/)。
 
@@ -22,7 +22,17 @@ npm run preview
 
 `dist/` 可部署至 GitHub Pages 或其他静态托管。Vite 使用相对资源路径，兼容 `/hw3/` 子路径。首次执行 pandas 需要网络下载锁定版本 Pyodide 0.27.2 与 pandas 包；赛事 JSON、D3 和 Three.js 随网站一起打包。运行时加载失败有错误提示、重试、取消与重置入口。
 
-## v2：图表是主角
+## v3：四章双线分析
+
+最新功能、计算契约、数据口径和验收路线见 [REFACTOR.md](./REFACTOR.md)。四章提供缺失矩阵、框选查询、拖放透视、关联与宽长表变形；运行结果、图表、解释和代码同源。提供高亮/应用区分、撤销重做、清洗预览、跨章范围和项目恢复。
+
+```powershell
+npm run data:chapters
+npm test
+npm run build
+```
+
+## v2：图表是主角（版本记录）
 
 主要导航为 **赛事可视化 → 数据故事 → 可视化实验室 → 数据与方法**。原有比赛探索与 43 个 pandas 方法领域保留为辅助工具。
 

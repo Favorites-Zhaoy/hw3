@@ -1,3 +1,5 @@
+> 最新四章重构见 [REFACTOR.md](./REFACTOR.md)。下文保留 v2 版本记录。
+
 # v2：从数据处理平台到世界杯可视化探索
 
 改版日期：2026-10-15，Asia/Singapore。在线网站：https://favorites-zhaoy.github.io/hw3/ 。

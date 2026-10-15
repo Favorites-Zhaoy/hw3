@@ -1,3 +1,5 @@
+> v3 四章、CSV 与通用数据验收见 [REFACTOR.md](./REFACTOR.md)，测试增补于 `tests/chapter-analysis.test.mjs`。下文保留原验收记录。
+
 # 验收记录
 
 日期：2026-10-15，Asia/Singapore。

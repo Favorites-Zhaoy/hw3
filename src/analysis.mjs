@@ -1,5 +1,7 @@
 // One operation protocol produces the exact Python executed by the worker.
 import {compileVisualAnalysis} from './visualAnalysis.mjs';
+import {compileChapter} from './data/chapterAnalysis.mjs';
+export {compileChapter} from './data/chapterAnalysis.mjs';
 const q = v => JSON.stringify(v);
 const literal = v => v === null ? 'None' : typeof v === 'boolean' ? (v ? 'True' : 'False') : q(v);
 const functions = new Set(['sum','mean','count','min','max','median','std','nunique']);
@@ -9,6 +11,7 @@ export function compilePipeline(source, operations, tables) {
   const code = ['import pandas as pd','import json',`tables = {k: pd.DataFrame(v) for k, v in json.loads(_tables_json).items()}`,`df = tables[${q(source)}].copy()`];
   for (const {type,params:p} of operations) {
     switch(type) {
+      case 'chapter_analysis': code.push(compileChapter(p.chapter,{...p.config,source}), 'df = pd.DataFrame(json.loads(_result)[0]["rows"])');break;
       case 'filter': {
         const s=`df[${q(p.field)}]`, v=literal(p.value);
         const mask = p.operator==='contains' ? `${s}.astype(str).str.contains(${q(String(p.value))}, regex=False, na=False)` : p.operator==='notnull' ? `${s}.notna()` : p.operator==='isnull' ? `${s}.isna()` : `${s} ${({'eq':'==','ne':'!=','gt':'>','lt':'<','ge':'>=','le':'<='})[p.operator] || '=='} ${v}`;

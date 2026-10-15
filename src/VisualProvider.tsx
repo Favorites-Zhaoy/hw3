@@ -9,15 +9,16 @@ type State={data:VisualResult|null;scope:VisualScope;mode:string;busy:boolean;st
 const Context=createContext<State|null>(null);
 export const useVisual=()=>{const ctx=useContext(Context);if(!ctx)throw new Error('VisualProvider missing');return ctx;};
 const digest=async(s:string)=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))).map(x=>x.toString(16).padStart(2,'0')).join('');
-export default function VisualProvider({bundle,scope,children}:{bundle:Bundle;scope:VisualScope;children:ReactNode}){
+export default function VisualProvider({bundle,scope,children,enabled=true}:{bundle:Bundle;scope:VisualScope;children:ReactNode;enabled?:boolean}){
   const pandas=usePandas();const runRef=useRef(pandas.run);runRef.current=pandas.run;
   const [cache,setCache]=useState<Row|null>(null),[cacheReady,setCacheReady]=useState(false),[record,setRecord]=useState<{key:string;data:VisualResult;mode:string;elapsed:number}|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(true),[attempt,setAttempt]=useState(0);
   const key=scopeKey(scope);const normalized=normalizeScope(scope);const code=compileVisualAnalysis(scope);const generation=useRef(0);const memory=useRef(new Map<string,VisualResult>());const sourceHash=useRef('');const forceLive=useRef(false);
   useEffect(()=>{let alive=true;setCacheReady(false);setCache(null);setRecord(null);memory.current.clear();
+    if(!enabled)return;
     const tables=Object.fromEntries(['matches','team_matches','goals','teams','venues'].map(k=>[k,bundle.tables[k]]));
     (async()=>{sourceHash.current=await digest(JSON.stringify(tables));const path=bundle.manifest.complete_tournament?'data/2026/full/visual_analysis.json':'data/2026/visual_analysis.json';try{const res=await fetch(import.meta.env.BASE_URL+path);if(res.ok){const candidate=await res.json();if(alive&&candidate.engine==='pandas'&&candidate.source_sha256===sourceHash.current)setCache(candidate);}}catch{/* worker remains available */}finally{if(alive)setCacheReady(true);}})();
     return()=>{alive=false;generation.current++;};
-  },[bundle.tables,bundle.manifest.complete_tournament]);
+  },[bundle.tables,bundle.manifest.complete_tournament,enabled]);
   useEffect(()=>{if(!cacheReady)return;let alive=true;const version=++generation.current;setBusy(true);setError('');
     (async()=>{try{
       const force=forceLive.current;forceLive.current=false;let payload=force?undefined:memory.current.get(key);let mode=payload?'memory':'live',elapsed=0;
