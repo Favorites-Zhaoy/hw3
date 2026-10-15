@@ -1,6 +1,0 @@
-order_id,order_date,region,category,sales,quantity
-A001,2026-01-01,East,Books,120,2
-A002,2026-01-03,West,Food,80,4
-A003,2026-01-05,East,Food,150,3
-A004,2026-01-08,North,Books,210,1
-A005,2026-01-09,West,Books,95,2

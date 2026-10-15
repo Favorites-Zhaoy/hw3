@@ -1,69 +1,31 @@
-export const ENGINE_VERSION='4.0.0';
+export const ENGINE_VERSION='3.1.0';
 export function compileChapter(chapter,config){
   if(!['quality','explore','teamsChapter','relations'].includes(chapter))throw new Error('Unknown chapter');
-  if(config.inspectIds)return `import pandas as pd, json
-cfg=json.loads(${JSON.stringify(JSON.stringify(config))})
-df=pd.DataFrame(json.loads(_tables_json)[cfg['source']])
-df['__wcl_id']=cfg['source']+':'+df.index.astype(str)
-selected=df.loc[df['__wcl_id'].isin(cfg['inspectIds'])]
-_result=json.dumps([{'rows':json.loads(selected.head(500).to_json(orient='records',date_format='iso')),'total':len(selected)}],ensure_ascii=False)
-`;
   return `import pandas as pd
 import numpy as np
 import json, io
 cfg = json.loads(${JSON.stringify(JSON.stringify({...config,chapter}))})
 tables = {k: pd.DataFrame(v) for k,v in json.loads(_tables_json).items()}
 source = cfg['source']
-def filter_frame(frame,scope,table):
-    masks=[]
-    for c in scope.get('conditions',[]):
-        f,op,v=c['field'],c['operator'],c.get('value')
-        if f not in frame: raise ValueError('FILTER_FIELD: '+str(f))
-        col=frame[f]
-        if op=='between': mask=col.between(v[0],v[1],inclusive='both')
-        elif op=='isin': mask=col.isin(v)
-        elif op=='isnull': mask=col.isna()
-        elif op=='contains': mask=col.astype('string').str.contains(str(v),regex=False,na=False)
-        else: mask={'eq':lambda:col.eq(v),'ne':lambda:col.ne(v),'ge':lambda:col.ge(v),'le':lambda:col.le(v),'gt':lambda:col.gt(v),'lt':lambda:col.lt(v)}[op]()
-        masks.append(mask.fillna(False))
-    if masks:
-        mask=masks[0]
-        for other in masks[1:]: mask=(mask | other) if scope.get('logic')=='or' else (mask & other)
-        frame=frame.loc[mask].copy()
-    if scope.get('selectedIds'):
-        ids=frame['__wcl_id'] if '__wcl_id' in frame else table+':'+frame.index.astype(str)
-        frame=frame.loc[ids.isin(scope['selectedIds'])].copy()
-    return frame
-
-def fill_value(frame,op):
-    series=frame[op['field']];strategy=op.get('strategy','fixed')
-    if strategy=='mean': return pd.to_numeric(series,errors='coerce').mean()
-    if strategy=='median': return pd.to_numeric(series,errors='coerce').median()
-    if strategy=='mode':
-        mode=series.mode(dropna=True)
-        if mode.empty: raise ValueError('NO_FILL_VALUE')
-        return mode.iloc[0]
-    return op.get('value')
 versions=[]
 for table_name,meta in cfg.get('registry',{}).items():
     if table_name==source or table_name not in tables: continue
     frame=tables[table_name].copy();before=list(frame.shape)
     for f,dtype in meta.get('types',{}).items():
         if f not in frame: continue
-        if dtype=='date': frame[f]=pd.to_datetime(frame[f],errors='coerce',format=meta.get('dateFormats',{}).get(f,'mixed'),utc=True)
+        if dtype=='date': frame[f]=pd.to_datetime(frame[f],errors='coerce',format='mixed',utc=True)
         elif dtype=='number': frame[f]=pd.to_numeric(frame[f],errors='coerce')
         elif dtype=='text': frame[f]=frame[f].astype('string')
         elif dtype=='boolean': frame[f]=frame[f].astype('string').str.lower().map({'true':True,'false':False}).astype('boolean')
     for op in meta.get('clean',[]):
         f=op.get('field');kind=op['type']
         if kind=='dropna': frame=frame.dropna(subset=[f]).copy()
-        elif kind=='fillna': frame[f]=frame[f].fillna(fill_value(frame,op))
+        elif kind=='fillna': frame[f]=frame[f].fillna(op['value'])
         elif kind=='deduplicate': frame=frame.drop_duplicates(subset=op.get('keys') or list(frame.columns),keep=op.get('keep','first')).copy()
         elif kind=='number': frame[f]=pd.to_numeric(frame[f],errors='coerce')
-        elif kind=='date': frame[f]=pd.to_datetime(frame[f],errors='coerce',format=meta.get('dateFormats',{}).get(f,'mixed'),utc=True)
+        elif kind=='date': frame[f]=pd.to_datetime(frame[f],errors='coerce',format='mixed',utc=True)
         elif kind=='text': frame[f]=frame[f].astype('string')
         elif kind=='boolean': frame[f]=frame[f].astype('string').str.lower().map({'true':True,'false':False}).astype('boolean')
-    frame=filter_frame(frame,meta.get('scope',{}),table_name)
     tables[table_name]=frame;versions.append({'table':table_name,'before':before,'after':list(frame.shape)})
 df = tables[source].copy()
 df['__wcl_id'] = source + ':' + df.index.astype(str)
@@ -82,7 +44,7 @@ def step(code):
 def lit(value):
     return repr(value)
 def public(frame):
-    return frame.drop(columns=[k for k in frame.columns if str(k).startswith('__wcl_')], errors='ignore')
+    return frame.drop(columns=['__wcl_id'], errors='ignore')
 def distribution(series, bins=10):
     valid=series.dropna()
     if valid.empty: return []
@@ -102,13 +64,13 @@ def profile(frame):
         elif pd.api.types.is_numeric_dtype(s) and n: inferred='number'
         elif pd.api.types.is_datetime64_any_dtype(s): inferred='date'
         elif n and s.dropna().astype(str).str.match(r'^\\d{4}-\\d{2}-\\d{2}').all(): inferred='date'
-        override=next((o['type'] for o in reversed(cfg.get('clean',[])) if o.get('field')==col and o['type'] in ['number','date','text','boolean']),cfg.get('types',{}).get(col))
+        override=cfg.get('types',{}).get(col)
         invalid_mask=pd.Series(False,index=s.index)
         raw=s
         if '__wcl_id' in frame and col in original:
             raw=pd.Series(original.set_index('__wcl_id')[col].reindex(frame['__wcl_id']).to_numpy(),index=s.index)
         if override=='number': invalid_mask=raw.notna() & pd.to_numeric(s,errors='coerce').isna()
-        if override=='date': invalid_mask=raw.notna() & pd.to_datetime(s,errors='coerce',format=cfg.get('dateFormats',{}).get(col,'mixed'),utc=True).isna()
+        if override=='date': invalid_mask=raw.notna() & pd.to_datetime(s,errors='coerce',format='mixed',utc=True).isna()
         invalid=int(invalid_mask.sum());valid=int((s.notna() & ~invalid_mask).sum());missing=int((s.isna() & ~invalid_mask).sum())
         result.append({'field':str(col),'dtype':str(s.dtype),'type':override or inferred,'valid':valid,'missing':missing,'invalid':invalid,'complete':valid/len(frame)*100 if len(frame) else 0,'unique':int(s.astype('string').nunique())})
     return result, info.getvalue()
@@ -116,30 +78,23 @@ def profile(frame):
 # The preparation chain is shared by all four chapters for this source table.
 for field,dtype in cfg.get('types',{}).items():
     if field not in df: continue
-    if dtype=='date': step('df['+lit(field)+'] = pd.to_datetime(df['+lit(field)+'], errors="coerce", format='+lit(cfg.get('dateFormats',{}).get(field,'mixed'))+', utc=True)')
+    if dtype=='date': step('df['+lit(field)+'] = pd.to_datetime(df['+lit(field)+'], errors="coerce", format="mixed", utc=True)')
     elif dtype=='number': step('df['+lit(field)+'] = pd.to_numeric(df['+lit(field)+'], errors="coerce")')
     elif dtype=='text': step('df['+lit(field)+'] = df['+lit(field)+'].astype("string")')
     elif dtype=='boolean': step('df['+lit(field)+'] = df['+lit(field)+'].astype("string").str.lower().map({"true": True, "false": False}).astype("boolean")')
 for op in cfg.get('clean',[]):
-    last_preparation=df.copy(deep=True)
     field=op.get('field'); kind=op['type']
-    if kind=='fillna':
-        resolved=fill_value(df,op)
-        if pd.isna(resolved): raise ValueError('NO_FILL_VALUE')
-        if hasattr(resolved,'item'): resolved=resolved.item()
-        step('df['+lit(field)+'] = df['+lit(field)+'].fillna('+lit(resolved)+')')
+    if kind=='fillna': step('df['+lit(field)+'] = df['+lit(field)+'].fillna('+lit(op['value'])+')')
     elif kind=='dropna': step('df = df.dropna(subset=['+lit(field)+']).copy()')
     elif kind=='deduplicate': step('df = df.drop_duplicates(subset='+lit(op.get('keys') or list(public(df).columns))+', keep='+lit(op.get('keep','first'))+').copy()')
     elif kind=='number': step('df['+lit(field)+'] = pd.to_numeric(df['+lit(field)+'], errors="coerce")')
-    elif kind=='date': step('df['+lit(field)+'] = pd.to_datetime(df['+lit(field)+'], errors="coerce", format='+lit(cfg.get('dateFormats',{}).get(field,'mixed'))+', utc=True)')
+    elif kind=='date': step('df['+lit(field)+'] = pd.to_datetime(df['+lit(field)+'], errors="coerce", format="mixed", utc=True)')
     elif kind=='text': step('df['+lit(field)+'] = df['+lit(field)+'].astype("string")')
     elif kind=='boolean': step('df['+lit(field)+'] = df['+lit(field)+'].astype("string").str.lower().map({"true": True, "false": False}).astype("boolean")')
 prepared=df.copy(deep=True)
-if cfg.get('scopeFilter'):
-    step('df = filter_frame(df, cfg["scopeFilter"], source)')
 
 if cfg['chapter']=='quality':
-    if cfg.get('worldcupContext') and source=='matches' and all(k in df for k in ['ft1','ft2','stage']):
+    if source=='matches' and all(k in df for k in ['ft1','ft2','stage']):
         if cfg.get('matchIds'): step('df = df.loc[df["match_id"].isin('+lit(cfg['matchIds'])+')].copy()')
         if cfg.get('teamIds'): step('df = df.loc[df["team1_id"].isin('+lit(cfg['teamIds'])+') | df["team2_id"].isin('+lit(cfg['teamIds'])+')].copy()')
         if cfg.get('stage'): step('df = df.loc[df["stage"].eq('+lit(cfg['stage'])+')].copy()')
@@ -183,27 +138,21 @@ if cfg['chapter']=='quality':
         elif kind=='deduplicate':
             kk=op.get('keys') or list(public(df).columns);preview_code='preview = df.drop_duplicates(subset='+lit(kk)+', keep='+lit(op.get('keep','first'))+')';temp=temp.drop_duplicates(subset=kk,keep=op.get('keep','first'))
         else:
-            if kind=='fillna':
-                resolved=fill_value(temp,op)
-                if pd.isna(resolved): raise ValueError('NO_FILL_VALUE')
-                if hasattr(resolved,'item'): resolved=resolved.item()
-                replacement=temp[f].fillna(resolved);preview_code='preview['+lit(f)+'] = df['+lit(f)+'].fillna('+lit(resolved)+')'
+            if kind=='fillna': replacement=temp[f].fillna(op['value']);preview_code='preview['+lit(f)+'] = df['+lit(f)+'].fillna('+lit(op['value'])+')'
             elif kind=='number': replacement=pd.to_numeric(temp[f],errors='coerce');preview_code='preview['+lit(f)+'] = pd.to_numeric(df['+lit(f)+'], errors="coerce")'
-            elif kind=='date': replacement=pd.to_datetime(temp[f],errors='coerce',format=op.get('format',cfg.get('dateFormats',{}).get(f,'mixed')),utc=True);preview_code='preview['+lit(f)+'] = pd.to_datetime(df['+lit(f)+'], errors="coerce", format='+lit(cfg.get('dateFormats',{}).get(field,'mixed'))+', utc=True)'
+            elif kind=='date': replacement=pd.to_datetime(temp[f],errors='coerce',format='mixed',utc=True);preview_code='preview['+lit(f)+'] = pd.to_datetime(df['+lit(f)+'], errors="coerce", format="mixed", utc=True)'
             elif kind=='boolean': replacement=temp[f].astype('string').str.lower().map({'true':True,'false':False}).astype('boolean');preview_code='preview['+lit(f)+'] = df['+lit(f)+'].astype("string").str.lower().map({"true": True, "false": False}).astype("boolean")'
             else: replacement=temp[f].astype('string');preview_code='preview['+lit(f)+'] = df['+lit(f)+'].astype("string")'
             changed=int(((temp[f].astype('string')!=replacement.astype('string')).fillna(False) | (temp[f].isna()!=replacement.isna())).sum());temp[f]=replacement
-        invalid=int((df[f].notna() & temp[f].isna()).sum()) if f in df and f in temp else 0
-        affected=df.index.difference(temp.index) if kind in ['dropna','deduplicate'] else df.index[(df[f].astype('string').ne(temp[f].astype('string')).fillna(False) | df[f].isna().ne(temp[f].isna()))]
-        preview={'operation':op,'before':len(df),'after':len(temp),'changed':max(changed,len(affected)),'invalid':invalid,'code':preview_code,'beforeRows':records(df.loc[affected].head(12)),'afterRows':records(temp.reindex(affected).head(12))}
+        preview={'operation':op,'before':len(df),'after':len(temp),'changed':changed,'code':preview_code}
     membership=[]
     if field and df[field].notna().any():
         if pd.api.types.is_numeric_dtype(df[field]) and not pd.api.types.is_bool_dtype(df[field]): labels=pd.cut(df[field],bins=10,duplicates='drop').astype('string')
         elif pd.api.types.is_datetime64_any_dtype(df[field]): labels=df[field].dt.strftime('%Y-%m-%d').astype('string')
         else: labels=df[field].astype('string')
         membership=[{'id':df.loc[i,'__wcl_id'],'key':str(k)} for i,k in labels.dropna().items()]
-    charts={'profile':prof,'beforeProfile':before_prof,'info':info,'pixels':pixels,'pageStart':start,'distribution':distribution(df[field]) if field else [],'membership':membership,'describe':records(summary),'duplicates':records(dupgroups),'duplicateRows':int(duplicate.sum()),'removeDuplicates':int(removing.sum()),'dropPreview':int(df[field].isna().sum()) if field else 0,'changes':changes,'changedCells':changed_cells,'removedRows':len(original)-len(df),'cleanPreview':preview,'box':json.loads(pd.to_numeric(df[field],errors='coerce').dropna().quantile([0,.25,.5,.75,1]).to_json()) if field and pd.to_numeric(df[field],errors='coerce').notna().any() else {},'tableSizes':[{'key':k,'label':k,'value':len(v),'columns':len(v.columns),'nonNull':int(v.notna().sum().sum())} for k,v in tables.items()]}
-    if cfg.get('worldcupContext') and source=='matches' and all(k in df for k in ['ft1','ft2','match_id']):
+    charts={'profile':prof,'beforeProfile':before_prof,'info':info,'pixels':pixels,'pageStart':start,'distribution':distribution(df[field]) if field else [],'membership':membership,'describe':records(summary),'duplicates':records(dupgroups),'duplicateRows':int(duplicate.sum()),'removeDuplicates':int(removing.sum()),'dropPreview':int(df[field].isna().sum()) if field else 0,'changes':changes,'changedCells':changed_cells,'removedRows':len(original)-len(df),'cleanPreview':preview,'tableSizes':[{'key':k,'label':k,'value':len(v),'columns':len(v.columns),'nonNull':int(v.notna().sum().sum())} for k,v in tables.items()]}
+    if source=='matches' and all(k in df for k in ['ft1','ft2','match_id']):
         overview=df.assign(total_goals=df.et1.combine_first(df.ft1)+df.et2.combine_first(df.ft2))
         overview['goal_margin']=(overview.et1.combine_first(overview.ft1)-overview.et2.combine_first(overview.ft2)).abs()
         daily=overview.groupby('date').agg(matches=('match_id','size'),goals=('total_goals','sum')).reset_index()
@@ -218,7 +167,7 @@ if cfg['chapter']=='quality':
     steps.append({'code':"df.info()\\ndf.describe(include='all')\\ndf.isna().sum()\\ndf.duplicated(subset="+lit(keys)+", keep="+lit(cfg.get('keep','first'))+")",'before':list(df.shape),'after':list(df.shape)})
 
 elif cfg['chapter']=='explore':
-    world=cfg.get('worldcupContext') and all(k in df.columns for k in ['ft1','ft2','match_id'])
+    world=all(k in df.columns for k in ['ft1','ft2','match_id'])
     if world:
         a="df['et1'].combine_first(df['ft1'])" if cfg.get('final',True) else "df['ft1']"
         b="df['et2'].combine_first(df['ft2'])" if cfg.get('final',True) else "df['ft2']"
@@ -250,7 +199,7 @@ elif cfg['chapter']=='explore':
     bins=max(3,min(10,int(cfg.get('bins',5))))
     equal=[];quantile=[];edges=[]
     if x in df and pd.api.types.is_numeric_dtype(df[x]) and df[x].notna().any():
-        step('df["__wcl_cut"] = pd.cut(df['+lit(x)+'], bins='+lit(cfg.get('binEdges') or bins)+', include_lowest=True, duplicates="drop")')
+        step('df["__wcl_cut"] = pd.cut(df['+lit(x)+'], bins='+str(bins)+', duplicates="drop")')
         step('df["__wcl_qcut"] = pd.qcut(df['+lit(x)+'], q='+str(bins)+', duplicates="drop")')
         equal=[{'key':str(k),'label':str(k),'value':int(v)} for k,v in df['__wcl_cut'].value_counts(sort=False).items()]
         quantile=[{'key':str(k),'label':str(k),'value':int(v)} for k,v in df['__wcl_qcut'].value_counts(sort=False).items()]
@@ -258,9 +207,6 @@ elif cfg['chapter']=='explore':
         df['__wcl_cut']=df['__wcl_cut'].astype('string');df['__wcl_qcut']=df['__wcl_qcut'].astype('string')
     if y in df and pd.api.types.is_numeric_dtype(df[y]) and df[y].notna().any(): df['__wcl_ycut']=pd.cut(df[y],bins=bins,duplicates='drop').astype('string')
     sort=cfg.get('sort')
-    if cfg.get('topOnly') and sort in df and pd.api.types.is_numeric_dtype(df[sort]): step('df = df.nlargest('+str(max(1,int(cfg.get('top',10))))+', '+lit(sort)+', keep="first").copy()')
-    if cfg.get('binMode') in ['cut','qcut'] and '__wcl_'+cfg['binMode'] in df:
-        step('df["bin"] = df["__wcl_'+cfg['binMode']+'"]')
     if sort in df: step('df = df.sort_values('+lit(sort)+', ascending='+lit(cfg.get('ascending',False))+', kind="stable", na_position="last")')
     types=[]
     if world:
@@ -268,8 +214,8 @@ elif cfg['chapter']=='explore':
         types=[{'key':str(k),'label':str(k),'value':int(v)} for k,v in df['__wcl_type'].value_counts().items()]
     dates=[];date=cfg.get('date')
     if date in df:
-        parsed=pd.to_datetime(df[date],errors='coerce',format=cfg.get('dateFormats',{}).get(date,'mixed'),utc=True);dates=[{'key':str(k),'label':str(k),'value':int(v)} for k,v in parsed.dt.strftime('%Y-%m-%d').value_counts().sort_index().items()]
-    charts={'world':world,'xDomain':[float(df[x].min()),float(df[x].max())] if x in df and pd.api.types.is_numeric_dtype(df[x]) and df[x].notna().any() else [],'points':records(df.head(1500)),'pointCount':len(df),'xDistribution':distribution(df[x],bins) if x in df else [],'yDistribution':distribution(df[y],bins) if y in df else [],'equal':equal,'quantile':quantile,'actualBins':len(edges),'requestedBins':bins,'edges':edges,'types':types,'dates':dates,'ranking':records(df.head(int(cfg.get('top',10)))),'numeric':list(df.select_dtypes(include='number').columns),'categories':records(df.groupby(cfg.get('color'),dropna=False).agg(value=('__wcl_id','size'),ids=('__wcl_id',list)).reset_index().rename(columns={cfg.get('color'):'category'})) if cfg.get('color') in df else []}
+        parsed=pd.to_datetime(df[date],errors='coerce',format='mixed',utc=True);dates=[{'key':str(k),'label':str(k),'value':int(v)} for k,v in parsed.dt.strftime('%Y-%m-%d').value_counts().sort_index().items()]
+    charts={'world':world,'points':records(df),'xDistribution':distribution(df[x],bins) if x in df else [],'yDistribution':distribution(df[y],bins) if y in df else [],'equal':equal,'quantile':quantile,'actualBins':len(edges),'requestedBins':bins,'edges':edges,'types':types,'dates':dates,'ranking':records(df.head(int(cfg.get('top',10)))),'numeric':list(df.select_dtypes(include='number').columns)}
     if world:
         score1=df.et1.combine_first(df.ft1) if cfg.get('final',True) else df.ft1
         score2=df.et2.combine_first(df.ft2) if cfg.get('final',True) else df.ft2
@@ -282,24 +228,21 @@ elif cfg['chapter']=='explore':
         charts['summary']={'matches':len(df),'extra':int(df.__wcl_extra.sum()),'shootout':int(df.__wcl_shootout.sum()),'late':int(df.__wcl_late.sum()),'goals':int(df.total_goals.sum())}
 
 elif cfg['chapter']=='teamsChapter':
-    world=cfg.get('worldcupContext') and all(k in df for k in ['team_id','goals_for_90','goals_against_90'])
+    world=all(k in df for k in ['team_id','goals_for_90','goals_against_90'])
     if cfg.get('matchIds') and 'match_id' in df: step('df = df.loc[df["match_id"].isin('+lit(cfg['matchIds'])+')].copy()')
     if cfg.get('teamIds') and 'team_id' in df: step('df = df.loc[df["team_id"].isin('+lit(cfg['teamIds'])+')].copy()')
     row,col,value=cfg.get('row'),cfg.get('column'),cfg.get('value');func=cfg.get('func','mean')
-    if func not in ['sum','mean','count','nunique','std','min','max','median']: raise ValueError('AGGREGATION')
+    if func not in ['sum','mean','count','std','min','max','median']: raise ValueError('AGGREGATION')
     if row not in df or value not in df: raise ValueError('SELECT_DIMENSION_AND_MEASURE')
-    basis=df.copy(deep=True);pivot_basis=df.copy(deep=True)
+    basis=df.copy(deep=True)
     numeric=pd.to_numeric(df[value],errors='coerce')
-    if func not in ['count','nunique'] and not numeric.notna().any(): warnings.append('NO_NUMERIC_VALUES')
-    nonnumeric=not numeric.notna().any() and func in ['count','nunique']
+    if func!='count' and not numeric.notna().any(): warnings.append('NO_NUMERIC_VALUES')
+    nonnumeric=not numeric.notna().any() and func=='count'
     if nonnumeric:
         original_value=value;value='__wcl_count_value';mask=df[original_value].notna();df[value]=mask.astype(float).where(mask)
     else: df[value]=numeric
-    pivot_value=cfg['value']
-    if func not in ['count','nunique']: pivot_basis[pivot_value]=numeric
     groupcode='summary = df.groupby('+lit(row)+', dropna=False).agg(total=('+lit(value)+', "sum"), average=('+lit(value)+', "mean"), maximum=('+lit(value)+', "max"), std=('+lit(value)+', "std"), played=('+lit(value)+', "count"), records=('+lit(value)+', "size")).reset_index()'
     step(groupcode)
-    summary['value']=pivot_basis.groupby(row,dropna=False)[cfg['value']].agg(func).reindex(pd.Index(summary[row])).to_numpy() if func in ['count','nunique'] else df.groupby(row,dropna=False)[value].agg(func).reindex(pd.Index(summary[row])).to_numpy()
     summary.loc[summary.played.eq(0),['total','average','maximum','std']]=np.nan
     summary['team_id']=summary[row].astype('string');summary['total_goals']=summary['total'];summary['average_goals']=summary['average'];summary['goal_std']=summary['std']
     summary['rank_total']=summary.total.rank(method='min',ascending=False);summary['rank_average']=summary.average.rank(method='min',ascending=False)
@@ -315,23 +258,17 @@ elif cfg['chapter']=='teamsChapter':
         summary=summary.merge(deepest,on='team_id',validate='one_to_one')
     else: summary['average_conceded']=summary['std'];summary['furthest_stage']=''
     if col in df and col!=row:
-        if pivot_value in [row,col]:
-            step('pivot = pivot_basis.groupby(['+lit(row)+', '+lit(col)+'], dropna=False)['+lit(pivot_value)+'].agg('+lit(func)+').unstack()')
-        else: step('pivot = pd.pivot_table(pivot_basis, index='+lit(row)+', columns='+lit(col)+', values='+lit(pivot_value)+', aggfunc='+lit(func)+', dropna=False)')
+        step('pivot = pd.pivot_table(df, index='+lit(row)+', columns='+lit(col)+', values='+lit(value)+', aggfunc='+lit(func)+', dropna=False)')
     else:
-        step('pivot = pivot_basis.groupby('+lit(row)+', dropna=False)[['+lit(pivot_value)+']].agg('+lit(func)+')')
+        step('pivot = df.groupby('+lit(row)+', dropna=False)[['+lit(value)+']].agg('+lit(func)+')')
     # Sum on an all-null group must remain unavailable, rather than a fabricated zero.
-    if col in df and col!=row: pivot=pivot.where(pivot_basis.groupby([row,col],dropna=False)[pivot_value].count().unstack().gt(0))
-    else: pivot=pivot.where(pivot_basis.groupby(row,dropna=False)[[pivot_value]].count().gt(0))
-    cells=[]
-    for group_key,part in basis.groupby([row,col] if col in basis and col!=row else [row],dropna=False):
-        if not isinstance(group_key,tuple): group_key=(group_key,)
-        cells.append({'row':str(group_key[0]),'column':str(group_key[1]) if len(group_key)>1 else str(pivot_value),'ids':part.__wcl_id.tolist()})
+    if col in df and col!=row: pivot=pivot.where(pd.pivot_table(df,index=row,columns=col,values=value,aggfunc='count',dropna=False).gt(0))
+    else: pivot=pivot.where(df.groupby(row,dropna=False)[[value]].count().gt(0))
     summary=summary.sort_values(['rank_total','team_id'],kind='stable',na_position='last')
     focus=str(cfg.get('focus') or (summary.iloc[0]['team_id'] if len(summary) else ''))
     date=cfg.get('date');trend=pd.DataFrame();resampled=pd.DataFrame();cross=pd.DataFrame()
     if date in df:
-        step('df['+lit(date)+'] = pd.to_datetime(df['+lit(date)+'], errors="coerce", format='+lit(cfg.get('dateFormats',{}).get(date,'mixed'))+', utc=True)')
+        step('df['+lit(date)+'] = pd.to_datetime(df['+lit(date)+'], errors="coerce", format="mixed", utc=True)')
         trend=df.loc[df[row].astype('string').eq(focus)].sort_values(date,kind='stable').copy()
         trend['match_index']=np.arange(1,len(trend)+1);trend['goals']=trend[value];trend['date']=trend[date].dt.strftime('%Y-%m-%d')
         trend['rolling_goals']=trend[value].rolling(${Math.max(2,Math.min(5,Number(config.window)||3))}, min_periods=1).mean();trend['cumulative_goals']=trend[value].cumsum()
@@ -341,8 +278,8 @@ elif cfg['chapter']=='teamsChapter':
         resampled=timed[[value]].resample(freq).sum(min_count=1).reset_index();resampled[date]=resampled[date].dt.strftime('%Y-%m-%d')
         steps.append({'code':'df.set_index('+lit(date)+')[['+lit(value)+']].resample('+lit(freq)+').sum(min_count=1)','before':list(df.shape),'after':list(resampled.shape)})
     if col in df and col!=row: cross=pd.crosstab(df[row],df[col]).reset_index()
-    charts={'basisRows':len(basis),'world':football_metric,'countOnly':nonnumeric,'groups':records(summary),'rankShift':records(summary.loc[((summary.rank_total.le(8)) | (summary.rank_average.le(8))) & summary.average.notna()]),'pivot':{'rows':[str(k) for k in pivot.index][:50],'cols':[str(k) for k in pivot.columns][:30],'values':json.loads(pivot.iloc[:50,:30].to_json(orient='values')),'totalRows':len(pivot.index),'totalColumns':len(pivot.columns)},'trend':records(trend),'focus':focus,'resampled':records(resampled),'cross':records(cross),'basis':records(basis.head(10000)),'cells':cells,'distribution':distribution(df[value]),'measure':value,'reference':{'x':None if pd.isna(summary.average_goals.mean()) else float(summary.average_goals.mean()),'y':None if pd.isna(summary.average_conceded.mean()) else float(summary.average_conceded.mean())}}
-    df=summary.copy() if football_metric else summary.loc[:,list(dict.fromkeys([row,'total','average','maximum','std','played','records','value','rank_total','rank_average','rank_change']))].copy()
+    charts={'world':football_metric,'countOnly':nonnumeric,'groups':records(summary),'rankShift':records(summary.loc[((summary.rank_total.le(8)) | (summary.rank_average.le(8))) & summary.average.notna()]),'pivot':{'rows':[str(k) for k in pivot.index][:50],'cols':[str(k) for k in pivot.columns][:30],'values':json.loads(pivot.iloc[:50,:30].to_json(orient='values')),'totalRows':len(pivot.index),'totalColumns':len(pivot.columns)},'trend':records(trend),'focus':focus,'resampled':records(resampled),'cross':records(cross),'basis':records(basis),'distribution':distribution(df[value]),'measure':value,'reference':{'x':None if pd.isna(summary.average_goals.mean()) else float(summary.average_goals.mean()),'y':None if pd.isna(summary.average_conceded.mean()) else float(summary.average_conceded.mean())}}
+    df=summary.copy()
 
 else:
     mode=cfg.get('relationMode','merge');right=cfg.get('right');left=df.copy();rightframe=tables.get(right,pd.DataFrame()).copy()
@@ -356,7 +293,7 @@ else:
         if right=='goals': rightframe=rightframe.loc[rightframe.minute_base.le(90)].copy()
     lk,rk=cfg.get('leftKey'),cfg.get('rightKey')
     outer=pd.DataFrame();flow=[]
-    if mode in ['merge','join','preview']:
+    if mode in ['merge','join']:
         if lk not in df or rk not in rightframe: raise ValueError('SELECT_JOIN_KEYS')
         left_dupes=int(df[lk].duplicated(keep=False).sum());right_dupes=int(rightframe[rk].duplicated(keep=False).sum())
         # Exact output weights from key frequencies avoid materializing a dangerous Cartesian product just to preview it.
@@ -366,13 +303,11 @@ else:
         key_counts['__weight']=key_counts.__left_n.fillna(1)*key_counts.__right_n.fillna(1)
         flow=[{'key':k,'label':k,'value':int(key_counts.loc[key_counts['_merge'].eq(k),'__weight'].sum())} for k in ['left_only','both','right_only']]
         outer=pd.DataFrame(index=range(min(100001,sum(r['value'] for r in flow))))
+        if len(outer)>100000: raise ValueError('JOIN_TOO_LARGE: '+str(sum(r['value'] for r in flow))+' output rows; inspect duplicate keys before joining')
         how=cfg.get('how','left');validate=cfg.get('validate','many_to_one')
-        expected_join=sum(r['value'] for r in flow if r['key']=='both' or (how in ['left','outer'] and r['key']=='left_only') or (how in ['right','outer'] and r['key']=='right_only'))
-        if expected_join>100000 and mode!='preview': raise ValueError('JOIN_TOO_LARGE: '+str(expected_join)+' output rows; inspect duplicate keys before joining')
         if how not in ['left','right','inner','outer']: raise ValueError('JOIN_MODE')
         if validate not in ['one_to_one','one_to_many','many_to_one','many_to_many']: raise ValueError('CARDINALITY')
-        if mode=='preview': pass
-        elif mode=='join': step('df = df.join(rightframe.set_index('+lit(rk)+'), on='+lit(lk)+', how='+lit(how)+', validate='+lit(validate)+', rsuffix="_right")')
+        if mode=='join': step('df = df.join(rightframe.set_index('+lit(rk)+'), on='+lit(lk)+', how='+lit(how)+', validate='+lit(validate)+', rsuffix="_right")')
         else: step('df = df.merge(rightframe, left_on='+lit(lk)+', right_on='+lit(rk)+', how='+lit(how)+', validate='+lit(validate)+', suffixes=("", "_right"), indicator=True)')
         if left_dupes and right_dupes: warnings.append('MANY_TO_MANY')
     elif mode=='concat':
@@ -382,20 +317,13 @@ else:
         if not df.columns.is_unique: df.columns=[str(c)+'__'+str(i) for i,c in enumerate(df.columns)]
     else:
         left_dupes=right_dupes=0
-    expected_rows=sum(r['value'] for r in flow if r['key']=='both' or (cfg.get('how','left') in ['left','outer'] and r['key']=='left_only') or (cfg.get('how','left') in ['right','outer'] and r['key']=='right_only'))
     vars=[v for v in cfg.get('valueVars',[]) if v in left];ids=[v for v in cfg.get('idVars',[]) if v in left and v not in vars]
-    melt_value='value'
-    while melt_value in left: melt_value='measure_'+melt_value
-    melt_metric='metric'
-    while melt_metric in left: melt_metric='source_'+melt_metric
-    melted=left.melt(id_vars=ids+['__wcl_id'],value_vars=vars,var_name=melt_metric,value_name=melt_value) if vars else pd.DataFrame()
+    melted=left.melt(id_vars=ids+['__wcl_id'],value_vars=vars,var_name='metric',value_name='value') if vars else pd.DataFrame()
     stacked_series=left.set_index('__wcl_id')[vars].stack(future_stack=True) if vars else pd.Series(dtype=object)
     stacked=stacked_series.rename('value').reset_index() if vars else pd.DataFrame()
     unstacked=stacked_series.unstack() if vars else pd.DataFrame()
-    if mode=='stack': step('df = stacked.copy()')
-    if mode=='unstack': step('df = left.set_index("__wcl_id")['+lit(ids)+'].join(unstacked).reset_index().copy()')
-    if mode=='melt': step('df = df.melt(id_vars='+lit(ids+['__wcl_id'])+', value_vars='+lit(vars)+', var_name='+lit(melt_metric)+', value_name='+lit(melt_value)+')')
-    steps.append({'code':'melted = left.melt(id_vars='+lit(ids+['__wcl_id'])+', value_vars='+lit(vars)+', var_name='+lit(melt_metric)+', value_name='+lit(melt_value)+')\\nstacked_series = left.set_index("__wcl_id")['+lit(vars)+'].stack(future_stack=True)\\nunstacked = stacked_series.unstack()','before':list(left.shape),'after':list(melted.shape)})
+    if mode=='melt': step('df = df.melt(id_vars='+lit(ids+['__wcl_id'])+', value_vars='+lit(vars)+', var_name="metric", value_name="value")')
+    steps.append({'code':'melted = left.melt(id_vars='+lit(ids+['__wcl_id'])+', value_vars='+lit(vars)+', var_name="metric", value_name="value")\\nstacked_series = left.set_index("__wcl_id")['+lit(vars)+'].stack(future_stack=True)\\nunstacked = stacked_series.unstack()','before':list(left.shape),'after':list(melted.shape)})
     match=None;events=pd.DataFrame();all_events=pd.DataFrame();progress=[];match_list=[]
     can_reconstruct=cfg.get('worldcupContext') and 'match_id' in df and 'matches' in tables and 'goals' in tables and all(c in tables['matches'] for c in ['match_id','team1_id','team2_id'])
     if mode in ['merge','join'] and {source,right}=={'goals','matches'} and (lk!='match_id' or rk!='match_id'):
@@ -426,12 +354,10 @@ else:
             expected=[match.get('et1') if cfg.get('final',True) and match.get('et1') is not None else match['ft1'],match.get('et2') if cfg.get('final',True) and match.get('et2') is not None else match['ft2']]
             if [home,away]!=expected: warnings.append('EVENT_SCORE_MISMATCH')
             steps.append({'code':'events = event_pool.merge(chosen[["match_id", "date", "stage"]], on="match_id", how="inner", validate="many_to_one")','before':list(tables['goals'].shape),'after':list(events.shape)})
-    charts={'expectedRows':expected_rows,'previewOnly':mode=='preview','flow':flow,'leftRows':len(left),'rightRows':len(rightframe),'leftDuplicates':left_dupes,'rightDuplicates':right_dupes,'outerRows':len(outer),'leftPreview':records(left.head(8)),'rightPreview':records(rightframe.head(8)),'long':records(melted),'stacked':records(stacked),'widePreview':records(left[ids+vars+['__wcl_id']].head(5)) if vars else [],'match':match,'events':records(events),'allEvents':records(all_events),'progress':progress,'matches':match_list,'schema':[{'table':k,'fields':[str(c) for c in v.columns], 'rows':len(v)} for k,v in tables.items()]}
+    charts={'flow':flow,'leftRows':len(left),'rightRows':len(rightframe),'leftDuplicates':left_dupes,'rightDuplicates':right_dupes,'outerRows':len(outer),'leftPreview':records(left.head(8)),'rightPreview':records(rightframe.head(8)),'long':records(melted),'stacked':records(stacked),'widePreview':records(left[ids+vars+['__wcl_id']].head(5)) if vars else [],'match':match,'events':records(events),'allEvents':records(all_events),'progress':progress,'matches':match_list,'schema':[{'table':k,'fields':[str(c) for c in v.columns], 'rows':len(v)} for k,v in tables.items()]}
 
 prof,info=profile(df)
 payload={'engine':'pandas','pandasVersion':pd.__version__,'version':'${ENGINE_VERSION}','chapter':cfg['chapter'],'source':source,'inputRows':len(original),'inputColumns':len(public(original).columns),'outputRows':len(df),'outputColumns':len(public(df).columns),'rows':records(df.head(10000)),'original':records(original.head(10000)),'prepared':records(prepared.head(10000)),'columns':[str(k) for k in public(df).columns],'profile':prof,'charts':charts,'steps':steps,'versions':versions,'warnings':warnings,'truncated':len(df)>10000}
-if cfg.get('exportAll'):
-    payload={'rows':records(public(df)),'columns':[str(k) for k in public(df).columns],'outputRows':len(df)}
 _result=json.dumps([payload], ensure_ascii=False, allow_nan=False)
 `;
 }
